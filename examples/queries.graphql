@@ -1,0 +1,164 @@
+{
+  users {
+    username
+    roles
+    orders {
+      _id
+      items
+      {
+        _id
+        itemDescription
+        menuCategory
+      }
+    }
+  }
+}
+
+query {
+  item(_id: "") {
+    _id
+    itemDescription
+    tags
+    sides { 
+      _id
+      itemDescription
+      itemPrice
+    }
+  }
+}
+
+query {
+  items(menuCategory: ENTRE) {
+    _id
+    itemDescription
+    menuCategory
+    tags
+  }
+}
+
+query {
+  allItems {
+    _id
+    itemDescription
+    menuCategory
+    tags
+  }
+}
+
+query { 
+  allOrders(webtoken: "") {
+        _id
+        user {
+          _id
+          username
+          firstName
+          lastName
+        }
+        items {
+          _id
+          itemDescription
+          itemPrice
+        }
+        total
+        statusMessage
+        fulfilled
+        createdAt
+  }
+}
+
+query {
+  allOrders {
+    _id 
+    user {
+      username
+      _id
+    }
+    items {
+      itemDescription
+      _id
+    }
+    total
+    statusMessage
+    fulfilled
+    createdAt
+  }
+}
+
+query { 
+  user(webtoken:"") {
+    _id
+    username
+    firstName
+    lastName
+    roles
+	}
+} 
+
+query { 
+  user(webtoken:"") {
+    _id
+    username
+    firstName
+    lastName
+    roles
+    orders {
+        user {
+          username
+        }
+        items {
+          _id
+          itemDescription
+        }
+        total
+        statusMessage
+        fulfilled
+        createdAt
+    }
+	}
+}
+
+query {
+  menu {
+    entrees {
+      _id
+      itemDescription
+      itemPrice
+      tags
+      sides {
+        _id
+        itemDescription
+        tags
+      }
+      upsells {
+        _id
+        itemDescription
+        itemPrice
+        tags
+      }
+    }
+    sides {
+      _id
+      itemDescription
+      itemPrice
+      tags
+    }
+    appetizers {
+      _id
+      itemDescription
+      itemPrice
+      tags
+    }
+    deserts {
+      _id
+      itemDescription
+      itemPrice
+      tags
+    }
+    drinks {
+      _id
+      itemDescription
+      itemPrice
+      tags
+    }
+  }
+}

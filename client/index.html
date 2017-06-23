@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <title>Test Client</title>
+    <link type="text/css" rel="stylesheet"" href="index.css"></link>
+  </head>
+  <body>
+    <h3>login</h3>
+    <label for="login_username">username</label>
+    <input id='login_username' type="text"></input>
+    <label for="login_password">password</label>
+    <input id='login_password' type="password"></input>
+    <input class='login' type="button" value="login"></input>
+    <br/><br/>
+    <label for="signup_username">username</label>
+    <input id='signup_username' type="text"></input>
+    <label for="firstname">first name</label>
+    <input id='firstname' type="text"></input>
+    <label for="lastname">last name</label>
+    <input id='lastname' type="text"></input>
+    <label for="phone_number">phone number</label>
+    <input id='phone_number' type="text"></input>
+    <label for="signup_password">password</label>
+    <input id='signup_password' type="password"></input>
+    <label for="role">role</label>
+    <input id='role' type="text"></input>
+    <input class='signup' type="button" value="sign up"></input>
+    <br/>
+    <h2>Test Client</h2>
+    <div class='vspace'>
+      <span class='hspace'>Token</span><input class='copy' type="button" value="Copy"></input>
+    </div>
+    <div class='token'></div>
+    <br/>
+    <p>Query/Mutation Result</p>
+    <div class='result'></div>
+    <br/>
+    <div class='vspace'>
+      <span class='hspace'> Query | Mutation </span> <input class='run hspace' type="button" value="Post"></input> <input class='clear' type="button" value="Clear"></input>
+    </div>
+    <textarea class='test-input'></textarea>
+    <br/>
+    <p>Menu (Live)</p>
+    <div class='liveResult menu'></div>
+    <br/>
+    <p>All User's Orders (Live)</p>
+    <div class='liveResult orders'></div>
+
+    <script src='bundle.js'></script>
+  </body>
+</html>

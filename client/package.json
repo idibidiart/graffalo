@@ -1,0 +1,41 @@
+{
+  "name": "Graffalo",
+  "description": "Graffalo test client ",
+  "version": "0.0.1",
+  "homepage": "",
+  "main": ".",
+  "keywords": [
+    "feathers",
+    "graphql"
+  ],
+  "license": "",
+  "repository": {},
+  "author": {},
+  "contributors": [],
+  "bugs": {},
+  "engines": {
+    "node": ">= 0.12.0"
+  },
+  "babel": {
+    "presets": [
+      "env"
+    ]
+  },
+  "scripts": {
+    "start": "node .",
+    "dev": "nodemon . --exec babel-node --presets env"
+  },
+  "dependencies": {
+    "apollo-client": "^1.2.0",
+    "graphql-tag": "^2.0.0"
+  },
+  "devDependencies": {
+    "babel-preset-env": "^1.4.0",
+    "babelify": "^7.3.0",
+    "browserify": "^14.1.0",
+    "gulp": "^3.9.1",
+    "gulp-util": "^3.0.8",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.9.0"
+  }
+}

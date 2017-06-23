@@ -1,0 +1,60 @@
+      .run {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+      .token {
+        width: 97%;
+        height: 40px;
+        border: 1px solid black;
+        border-radius: 4px;
+        padding: 10px;
+        box-sizing: border-box;
+        vertical-align: top;
+        overflow-y: auto;
+        background-color: transparent;
+      }
+
+      .result {
+        width: 97%;
+        height: 200px;
+        border: 1px solid black;
+        border-radius: 4px;
+        padding: 10px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        box-sizing: border-box;
+        vertical-align: top;
+        overflow-y: auto;
+        background-color: transparent;
+      }
+
+      .hspace {
+        margin-right: 20px;
+      }
+      .vspace {
+        margin-bottom: 10px;
+      }
+
+      .test-input {
+        width: 97%;
+        height: 120px;
+      }
+
+      .liveResult {
+        width: 97%;
+        height: 200px;
+        border: 1px solid black;
+        border-radius: 4px;
+        padding: 10px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        box-sizing: border-box;
+        vertical-align: top;
+        overflow-y: auto;
+        background-color: transparent;
+        transition: background-color 400ms ease-out;
+      }
+
+      .alert {
+        background-color: darkorange !important;
+      }

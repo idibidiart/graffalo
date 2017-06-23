@@ -1,0 +1,56 @@
+{
+  "name": "Graffalo",
+  "description": "Graffalo backend example",
+  "version": "0.0.1",
+  "homepage": "",
+  "main": ".",
+  "keywords": [
+    "feathers",
+    "graphql"
+  ],
+  "license": "",
+  "repository": {},
+  "author": {},
+  "contributors": [],
+  "bugs": {},
+  "engines": {
+    "node": ">= 0.12.0"
+  },
+  "babel": {
+    "presets": [
+      "env"
+    ]
+  },
+  "scripts": {
+    "start": "node .",
+    "dev": "nodemon . --exec babel-node --presets env"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "compression": "^1.6.2",
+    "cors": "^2.7.1",
+    "feathers": "^2.0.1",
+    "feathers-authentication": "^0.7.9",
+    "feathers-configuration": "^0.2.3",
+    "feathers-errors": "^2.4.0",
+    "feathers-hooks": "^1.5.4",
+    "feathers-memory": "^1.1.0",
+    "feathers-mongoose": "^4.0.1",
+    "feathers-rest": "^1.4.3",
+    "graphql": "^0.9.6",
+    "graphql-server-express": "^0.7.2",
+    "graphql-tools": "^0.11.0",
+    "mongoose": "^4.8.4",
+    "request-promise": "^4.1.0",
+    "serve-favicon": "^2.3.0",
+    "winston": "^2.2.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.23.0",
+    "babel-preset-env": "^1.2.1",
+    "babel-register": "^6.11.6",
+    "mocha": "^2.5.3",
+    "nodemon": "^1.9.2",
+    "request": "^2.74.0"
+  }
+}

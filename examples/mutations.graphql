@@ -1,0 +1,95 @@
+mutation {
+  signUp(username: "test123", password: "password", firstName: "test", lastName: "123")
+  {
+    _id
+    roles
+  }
+}
+
+mutation {
+  logIn(username: "test123", password: "password") {
+    token
+    data {
+      _id
+      username
+      roles
+    }
+  }
+}
+
+mutation {
+  createItem(
+    item: {
+      itemDescription: "Lobster tail"
+      menuCategory: ENTRE
+      tags: ["seafood"]
+      itemPrice: "$24" 
+      itemImageURL: ""
+      sideIds: []
+      upsellIds: []
+    },
+    webtoken:""
+  )
+  {
+    _id
+    itemDescription
+    menuCategory
+  }
+}
+
+mutation {
+  editItem(
+    _id: "",
+    item: {
+      itemDescription: "Maine Lobster Tail"
+      menuCategory: ENTRE
+      tags: ["seafood"]
+      itemPrice: "$32" 
+      itemImageURL: ""
+      sideIds: []
+      upsellIds: []
+    },
+    webtoken:""
+  )
+  {
+    _id
+  }
+}
+
+mutation {
+  removeItem(
+    _id: "",
+    webtoken:""
+  )
+  {
+    _id
+  }
+}
+
+mutation {
+  createOrder(
+    order: {
+      itemIds: []
+      comment: ""
+    },
+    webtoken:""
+  )
+  {
+    _id
+    items {
+      _id
+      itemDescription
+      itemPrice
+    }
+    total
+    createdAt
+    user {
+      _id
+      username
+      phoneNumber
+    }
+  }
+}
+
+
+

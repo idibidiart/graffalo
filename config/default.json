@@ -1,0 +1,15 @@
+{
+  "host": "localhost",
+  "port": 3030,
+  "mongodb": "mongodb://localhost:27017/feathersGraphQL003",
+  "public": "../client/",
+  "comment1": "Feathers Authentication (legacy) assumes the service associated with autneticated entity",
+  "comment2": "is called 'users' and password field is 'password' and id is called '_id'",
+  "auth": {
+    "usernameField": "username",
+    "token": {
+      "secret": "juuwIKCh+ajbqMgWIkCM54U3wF3d5Gyzf6akq9GTRTekmog4AgWutgFKtWE1uIQG3OPpemubF5NPknJi4TwxRA=="
+    },
+    "local": {}
+  }
+}
