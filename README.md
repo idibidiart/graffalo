@@ -122,11 +122,9 @@ We should design the application to minimize write contention and for that we ma
 
 ## Two-Phase Commit (2PC) 
 
-While optimistic concurrency control (OCC) can take care of a whole class of problems, what happens if we're in the middle of a transaction that mutates (through promise-chained service invocations) many tables in our database and the application server crashes? The fact that we use data oriented microservices, where each service represents a table and that we may have dependent mutations that are carried out via separate services, means that we have to account for possibility of server crashing in the middle of a transaction. To solve this, many databases support a two-phase commit (2PC) process where we can rollback asynchronous promise-chained mutations that are part of a transaction upon server failure or any logical failure. MySQL supports XA transaction: https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_xa
+While optimistic concurrency control (OCC) can take care of a whole class of problems, what happens if we're in the middle of a transaction that mutates (through promise-chained service invocations) many tables in our database and the application server crashes? The fact that we use data oriented microservices, where each service represents a table and that we may have dependent mutations that are carried out via separate services, means that we have to account for possibility of server crashing in the middle of a transaction. To solve this, many databases support a two-phase commit (2PC) process where we can rollback a transaction upon server failure or any logical failure. 
 
 In a distributed DB scenario, Google Cloud Spanner also supports 2PC: https://cloud.google.com/spanner/docs/transactions and Amazon's DynamoDB supports this via a Java transaction library.
-
-NOTE: Concurrency Control and 2PC are not mutually exclusive solutions. You may need to employ both when the use cases overlap.
 
 ## Distributed Transactions
 
