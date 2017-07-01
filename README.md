@@ -118,7 +118,7 @@ Some possible directions:
 
   3. Non-Blocking Optimistic Concurrency Control in SQL for Single DB Instance (see section below)
 
-We should design the application to minimize write contention and for that we may use conditional updates to implement optimistic locking or better still serialize things so that nothing is happening at the same time to the same resource or set of resources. We can also acquire read-write locks so nothing can happen to a resource between the time we check its state and the time we apply an dependent update to it or to another resource. That's pessimistic read-write locking. The onus is on us to design the app in a way that leads to minimal or no contention because contention will either slow things down or lead to inconsistent state. 
+We should design the application to minimize write contention and for that we may use conditional updates to implement optimistic locking so that nothing is happening at the same time to the same resource or set of resources. We can also acquire read-write locks so nothing can happen to a resource between the time we check its state and the time we apply an dependent update to it or to another resource. That's pessimistic read-write locking. The onus is on us to design the app in a way that leads to minimal or no contention because contention will either slow things down or lead to inconsistent state. 
 
 ## Two-Phase Commit (2PC) 
 
