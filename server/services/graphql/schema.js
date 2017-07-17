@@ -18,7 +18,7 @@ enum MenuCategory {
   UPSELL
 }
 
-# composable "output" types for query result and mutation result
+# composable "output" types for query result and mutation result from db/api
 #
 # "!" means required and is necessary only in mutations (to validate user input
 # is complete and with correct types.) That is unless you want to 
@@ -78,14 +78,13 @@ type AuthPayload {
   user: User
 }
 
-# composable input types for query and mutation arguments
+# composable input types for query and mutation arguments from client
 #
 # input types cannot reference output types but can reference other input types
-# input types can be used as arguments in mutations and queries
 #
-# Just like how recursive relationship in output types have to be specified as
-# nested structure in the query, recursive relationships in input types have to be
-# specified as nested structures in the mutation
+# Just like how recursive relationship in output types are specified via
+# nesting in the query (and mutation result), recursive relationships in input types have to be
+# specified via nesting in the input
 #
 input orderInput {
   itemIds: [String!]!
@@ -119,7 +118,7 @@ type RootQuery {
 
 # this schema allows the following root mutations:
 # the returned type from each root mutation can be refined further by selecting nested types
-# tole restricted mutations require auth token
+# restricted mutations require auth token
 type RootMutation {
   signUp (
     username: String!
