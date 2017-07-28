@@ -211,7 +211,7 @@ We leave it to the client to decide exactly what part of that area of app state 
 
 The local state of the component can be used for query params such as the index of the last fetched item in a social status feed, so the status feed component, upon receiving a mutation signal from the server that is relevant to it, can get the latest items (from last index, which is passsed in as query param) We may generalize this pattern to UI components with arbitrary data structures. We do this because there is no way for the server to know what was the last state of the status feed on the client without the server becoming stateful and losing horizontal scalability or reliability.
 
-A good pattern is for local component state to be lifted into an auto-generated higher order component (HOC) wrapper so that all client components will be functionally pure and local state management will be in the HOC, clearly separated from the implementation.
+For complex components like forms, a good pattern is for local component state to be lifted into an auto-generated higher order component (HOC) wrapper so that all client components will be functionally pure and local state management will be in the HOC, clearly separated from the implementation.
 
 So while app state is not composed on the client things are different when it comes to client state:
 
