@@ -157,8 +157,7 @@ SELECT iD,
 FROM theTable
 WHERE iD = @theId;
  
-- {code that calculates NEW
-VALUES} -
+- {code that calculates newVal1, newVal2} -
 UPDATE theTable
 SET val1 = @newVal1,
     val2 = @newVal2
@@ -169,7 +168,9 @@ WHERE iD = @theId;
 
 ### The OPTIMISTIC LOCKING way is:
 
-Note that the key point is in the structure of the UPDATE instruction and the subsequent number of affected rows check. It is these two things together that let your code realize that someone has already modified the data in between when you have executed the SELECT and UPDATE. 
+NOTE: all code {between curl brackets} is intended to be in the app code and not in the SQL side
+
+Note that the key point is in the structure of the UPDATE instruction and the subsequent number of AffectedRows check. It is these two things together that let your code realize that someone has already modified the data in between when you have executed the SELECT and UPDATE. 
 
 ```sql
 -
@@ -180,7 +181,8 @@ SELECT iD,
 FROM theTable
 WHERE iD = @theId;
  
-- {code that calculates NEW VALUES} -
+- {code that calculates newVal1, newVal2} -
+
 UPDATE theTable
 SET val1 = @newVal1,
     val2 = @newVal2,
@@ -189,9 +191,9 @@ WHERE iD = @theId
   AND VERSION = @oldversion;
  
 - {IF AffectedRows == 1 } 
-- {GO ON WITH your other code} 
+- {proceed with other code} 
 - {ELSE} 
-- {decide what TO DO since it has gone bad... IN your code} 
+- {decide what to do since it has gone bad} 
 - {endif}
 ```
 
