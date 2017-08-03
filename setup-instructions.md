@@ -12,7 +12,8 @@ Make sure you've followed the Mac Basic Setup under Development Setup on Conflue
 * In a third command window: (launched from root folder):
   3. cd server
   4. ensure dependencies are installed: *yarn install* 
-  5. run server: *yarn run start*
+  5. go to config/default.json and config/production.json and set token secret to a random string
+  6. run server: *yarn run start*
 * In a fourth command window: (launched from root folder):
   1. cd client 
   2. transpile test client app: *gulp babel && gulp watch&*

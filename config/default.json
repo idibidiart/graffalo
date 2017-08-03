@@ -8,7 +8,7 @@
   "auth": {
     "usernameField": "username",
     "token": {
-      "secret": "juuwIKCh+ajbqMgWIkCM54U3wF3d5Gyzf6akq9GTRTekmog4AgWutgFKtWE1uIQG3OPpemubF5NPknJi4TwxRA=="
+      "secret": "replace_me"
     },
     "local": {}
   }
