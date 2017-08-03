@@ -20,6 +20,12 @@ Make sure you've followed the Mac Basic Setup under Development Setup on Conflue
 
 You can then view the demo application in a browser at localhost:3030, and find example queries and mutations for the test client in the /examples folder.
 
+The Roles for creating a user are:   USER, ADMIN, or SUPER_ADMIN
+
+Only USER can create orders and only ADMIN or SUPER_ADMIN can create menu items
+
+Enjoy
+
 ### Setup for PC
 
 Make sure you've followed the PC Basic Setup under Development Setup on Confluence. 
