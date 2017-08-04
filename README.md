@@ -104,7 +104,7 @@ app.service('users').before({
 });
 ```
 
-## Concurrency Control
+## Managed Concurrent Mutations to Shared Resources
 
 What happens in this kind of microservices architecture when we need to make multiple mutations (in promise chained calls) that are part of a single transaction (end state) across one or more services? Nothing if you have only one user and you're not interleaving writes. But what if you have two or more users concurrently using your application, with reads/writes against the same set of data?  The way this architecture is setup is we have inter-service composition happening in the GraphQL mutation resolvers. So for a transaction implementing dependent mutations asynchronously, the mutation resolver would orchestrate that transaction using conditional writes to guarantee consistency of our app state. If we're using a distributed database, for web scale transaction management, we would use one, like Google's Cloud Spanner, that can implement non-blocking concurrency control to guarantee consistency.
 
@@ -130,7 +130,7 @@ A distributed transaction includes one or more statements that, individually or 
 
 Databases that can be distributed may offer serializability or lineralizability or both (e.g. CockroachDB.)In a distributed database setting, the minimum required standard for transactional apps is serializability.  
 
-## Managing Mutations to Shared Resources in SQL (for a single db instance)
+## Optimistic Locking (for a single db instance)
 
 The point is that Optimistic Locking is not a database feature, not for MySQL nor for others: optimistic locking is a practice that is applied using the DB with standard instructions.
 
