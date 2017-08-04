@@ -43,7 +43,7 @@ So then the question is wouldn't losing Optimistic UI hurt mobile performance? T
 
 ## Feathers: Data-Oriented Microservices Framework for NodeJS
 
-There are many ways to create RESTful APIs with NodeJS and Express but things get a little more complicated when you also want to add real-time functionality and expose the same or similar functionality using websockets. Setting up shared authentication, finding consistent event names and making sure events get sent to the right clients are only some of the challenges. There are of course full blown real-time frameworks like Meteor or Sails but for a more minimalistic and flexible approach that works with GraphQL (Apollo Server), Feathers is the right fit. Feathers is a very small wrapper over top of Express 4 so it is nearly a drop-in replacement and can be used in place of Express in almost any existing application. You can still use all the same middleware, but you also get real-time, RESTful services right out of the box. The important new concept Feathers adds to Express is that of services. A service is just a JavaScript object that provides one or more of the following queries and mutations using the following data-oriented, uniform API, which is callable from any other service, and, therefore, composable. 
+The important new concept Feathers gives us in NodeJS is that of composable, data-oriented services. A service is just a JavaScript object that provides one or more of the following queries and mutations using the following data-oriented, uniform API, which is callable from any other service, and, therefore, composable. 
 
 ```javascript
 // All service methods return a promise
@@ -60,7 +60,7 @@ setup: function(app, path) {}
 // Use this service in your application at the /todos endpoint app.use('/todos', myService);
 ```
 
-The key innovation in combining GraphQL with Features is about having a very simple, uniform, data-oriented API that looks exactly the same on every database-connected service, where every table is mapped to a service (and in case of the Microservices architecture, each service having its own database to remain decoupled) with GraphQL providing the application-level, expressive interface on top of that. This works because service composition is possible using the uniform, data-oriented service API from within our GraphQL resolvers with GraphQL shaping the composed result to the structure specified in the client-defined GraphQL query. For example, if we want to get all comments for a given post, we would not associate the posts table with the comments table (as that would violate the clean, maintainable pattern of having separate, decoupled services) and instead we would call the find(...) API on the comments service passing in the post id. We can also delete every comment that belongs to a given user using the same inter-service composition defined in the GraphQL resolvers, by calling the remove() API on the comments service passing in the user id.
+The key innovation in combining GraphQL with Features is about having composable, data-oriented services that have a uniform CRUD interface plus a Query DSL that is adapted for various backends (SQL, NoSQL, APIs, etc), where every table or collection in db is mapped to a service (as well as the possibility for each service to have its own database to remain decoupled) with GraphQL providing the application-level, expressive interface on top of that. This means that service composition replaces relational joins. For example, if we want to get all comments for a given post, we would not associate the posts table with the comments table (as that would violate the clean, maintainable pattern of having separate, decoupled services) and instead we would call the find(...) API on the comments service passing in the post id. We can also delete every comment that belongs to a given user using the same inter-service composition defined in the GraphQL resolvers, by calling the remove() API on the comments service passing in the user id.
 
 Feathers will also hook into the mutative methods (create, update, patch, remove) and send events to listening clients when they successfully return. An application then can be made real-time just by listening to those events (with filtering rules on server side) and updating itself with the new data. It's important to note that backend services should not consume mutation events from Feathers services. The mutation events are meant for clients to update their state, not for other services to consume and opaquely mutate app state. If you want something to happen in an external system you should use Feathers after-hooks. If you want something to happen to Feathers connected data store after a given successful mutation then listen to the mutation event in the client that originated the mutation and create another mutation via GraphQL.
 
@@ -89,9 +89,7 @@ However, the benefits in turning those entities into services are:
 
 ## Pagination
 
-At this juncture, pagination of results can be done by either GraphQL or Feathers. My instinct is to use Feathers for pagination, since it's an operational semantic like subscriptions, which I believe are being wrongly shoved into GraphQL, which is a dynamic type layer, primarily concerned with defining I/O types. For example of other stuff to keep out of the schema, see this: https://github.com/facebook/graphql/issues/271#issuecomment-282878022
-
-Feathers pagination: https://github.com/feathersjs/feathers-docs/blob/master/databases/pagination.md
+At this juncture, pagination of results can be done by either GraphQL or Feathers. My instinct is to use Windowing rather than pagination. This involves moving the fetch/display window over that data, or row at a time.
 
 ## Protecting Service Methods
 
@@ -132,7 +130,7 @@ A distributed transaction includes one or more statements that, individually or 
 
 Databases that can be distributed may offer serializability or lineralizability or both (e.g. CockroachDB.)In a distributed database setting, the minimum required standard for transactional apps is serializability.  
 
-## Optimistic Concurrency Control in SQL (for a single db instance)
+## Managing Mutations to Shared Resources in SQL (for a single db instance)
 
 The point is that Optimistic Locking is not a database feature, not for MySQL nor for others: optimistic locking is a practice that is applied using the DB with standard instructions.
 
@@ -217,11 +215,13 @@ So while app state is not composed on the client things are different when it co
 
 1. For client components that issue GraphQL mutations, we should keep transient state of the resource(s) being mutated in a local route-centric store, where each route has its store that can be passed into the next route upon route transition to seed initial state from current route, until the transient state is committed to the server. A good example is a multi-step food ordering UI, where you select your pizza crust then the toppings then the sides etc. The idea is that we should be able to go back and pick a burger instead if a pizza and not end up with an inconsistent state having a burger with peperoni for topping. 
 
-2. For client-only state (i.e. any state that is not part of 'app state', e.g animation and client side validation) we should keep that state in the local state of the HOC wrapper. A good example is the hidden/shown state of some component.  
+2. Each route has a main container component associated with it and it's that component that does initial route hydration (and keeping in sync with server via server mutation events) but each sub-component of the route can launch it's own mutations and other sub-components in the route will just react to server mutation events if their data did change due to a mutation launched by that sub-component, or due to a mutation from another user involving a shared resource that the sub-component depends on for its state. This means that all components have to state their dependencies (statically) and the sync-ing happens with server mutation events.   
+
+3. For client-only state (i.e. any state that is not part of 'app state', e.g animation and client side validation) we should keep that state in the local state of the HOC wrapper.   
 
 
 ## Horizontal & Vertical Scaling 
 
 At this point, Feathers team has yet to document vertical scaling (multi-core support via Node cluster) and how that works with sockets.
 
-Feathers can be scaled horizontally with Nginx handling the load balancing and with feathers-sync propagating Feathers service mutation events across servers. Feathers can be Dockerized with one process per container and then scaled via Kubernetes cluster or in a more automated fashion with AWS Elastic Beanstalk and AWS Elastic Load Balancer.
+Feathers can be scaled horizontally with Nginx handling the load balancing. Feathers can be Dockerized with one process per container and then scaled via Kubernetes cluster or in a more automated fashion with AWS Elastic Beanstalk and AWS Elastic Load Balancer.
