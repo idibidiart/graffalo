@@ -75,7 +75,7 @@ type Order {
 # output type for login mutation
 type AuthPayload {
   token: String # JSON Web Token
-  user: User
+  data: User
 }
 
 # composable input types for query and mutation arguments from client
@@ -105,14 +105,14 @@ input itemInput {
 # the returned type from each root query can be refined further by selecting nested types
 # role restricted queries require auth token
 type RootQuery {
-  viewer(webtoken: String!): User
-  user(username: String!, webtoken: String!): User
-  users(webtoken: String!): [User] 
+  viewer: User
+  user(_id: String!): User
+  users: [User] 
   item(_id: String!): Item 
   items(menuCategory: MenuCategory): [Item] 
   allItems: [Item]
-  order(_id: String!, webtoken: String!): Order 
-  allOrders (webtoken: String!): [Order] 
+  order(_id: String!): Order 
+  allOrders: [Order] 
   menu: Menu
 }
 

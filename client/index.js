@@ -10,28 +10,6 @@ const networkInterface = createNetworkInterface({uri: 'http://localhost:3030/gra
 
 var webtoken = ""
 
-//
-// When upgrading to latest feathers-authentication
-// we'll need to generate anonymous auth token from /auth/local, save it in localstorage
-// and add it to every request
-//
-// networkInterface.use([{
-//   applyMiddleware(req, next) {
-//     if (!req.options.headers) {
-//       req.options.headers = {};  // Create the header object if needed.
-//     }
-//     req.options.headers = {
-//       authorization: localStorage.getItem('feathers-anon-jwt') ? localStorage.getItem('feathers-anon-jwt') : null
-//     }
-//     next();
-//   }
-// }]);
-
-// todo: update to new way of doing this
-const client = new ApolloClient({
-  networkInterface
-})
-
 const displayResult = (result) => {
   document.querySelector('.result').innerHTML =
     JSON.stringify(result, null, 2);
@@ -66,7 +44,7 @@ const signupMutation = gql`mutation (
 const loginMutation = gql`mutation ($username: String!, $password: String!){
   logIn(username: $username, password: $password) {
     token
-    user {
+    data {
       _id
       username
       roles
@@ -74,8 +52,8 @@ const loginMutation = gql`mutation ($username: String!, $password: String!){
   }
 }`;
 
-const ordersQuery = gql`query ($webtoken: String!) {
-  allOrders(webtoken: $webtoken) {
+const ordersQuery = gql`query {
+  allOrders {
         _id
         user {
           _id
@@ -140,11 +118,6 @@ const menuQuery = gql`query {
   }
 }`
 
-const observableMenuQuery = client.watchQuery({fetchPolicy: 'network-only', query: menuQuery, pollInterval: 1000 })
-observableMenuQuery.subscribe({
-  next: ({ data }) => displayLiveResults(data, "menu")
-})
-
 document.querySelector('.signup').addEventListener('click', () => {
   const username = document.getElementById('signup_username').value;
   const password = document.getElementById('signup_password').value;
@@ -180,6 +153,27 @@ document.querySelector('.clear').addEventListener('click', (e) => {
 
 var observableOrdersQuery, ordersSubscription;
 
+networkInterface.use([{
+  applyMiddleware(req, next) {
+    if (!req.options.headers) {
+      req.options.headers = {};  // Create the header object if needed.
+    }
+    req.options.headers = {
+      authorization: webtoken ? 'Bearer ' + webtoken : null
+    }
+    next();
+  }
+}])
+
+const client = new ApolloClient({
+  networkInterface
+})
+
+const observableMenuQuery = client.watchQuery({fetchPolicy: 'network-only', query: menuQuery, pollInterval: 1000 })
+observableMenuQuery.subscribe({
+  next: ({ data }) => displayLiveResults(data, "menu")
+})
+
 document.querySelector('.login').addEventListener('click', () => {
   const username = document.getElementById('login_username').value;
   const password = document.getElementById('login_password').value;
@@ -197,7 +191,7 @@ document.querySelector('.login').addEventListener('click', () => {
             ordersSubscription.unsubscribe()
           }
 
-          observableOrdersQuery = client.watchQuery({fetchPolicy: 'network-only', query: ordersQuery, variables: { webtoken }, pollInterval: 1000 })
+          observableOrdersQuery = client.watchQuery({fetchPolicy: 'network-only', query: ordersQuery, pollInterval: 1000 })
           ordersSubscription = observableOrdersQuery.subscribe({
             next: ({ data }) => displayLiveResults(data, "orders")
           })

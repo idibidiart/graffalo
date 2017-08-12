@@ -14,7 +14,6 @@ module.exports = function () {
     resolvers: Resolvers.call(app)
   });
 
-  // Initialize our service with any options it requires
   app.use('/graphql', graphqlExpress((req) => {
     let {provider, token} = req.feathers;
     return {

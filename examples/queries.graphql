@@ -1,4 +1,36 @@
-{
+query { 
+  viewer {
+    _id
+    username
+    firstName
+    lastName
+    roles
+    orders {
+        user {
+          username
+        }
+        items {
+          _id
+          itemDescription
+        }
+        total
+        statusMessage
+        fulfilled
+        createdAt
+    }
+	}
+}
+
+query {
+  user(_id: "") {
+    username
+    firstName
+    lastName
+    roles
+  }
+}
+
+query {
   users {
     username
     roles
@@ -46,7 +78,7 @@ query {
 }
 
 query { 
-  allOrders(webtoken: "") {
+  allOrders {
         _id
         user {
           _id
@@ -82,39 +114,6 @@ query {
     fulfilled
     createdAt
   }
-}
-
-query { 
-  user(webtoken:"") {
-    _id
-    username
-    firstName
-    lastName
-    roles
-	}
-} 
-
-query { 
-  user(webtoken:"") {
-    _id
-    username
-    firstName
-    lastName
-    roles
-    orders {
-        user {
-          username
-        }
-        items {
-          _id
-          itemDescription
-        }
-        total
-        statusMessage
-        fulfilled
-        createdAt
-    }
-	}
 }
 
 query {
