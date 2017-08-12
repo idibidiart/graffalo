@@ -19,6 +19,8 @@ Frameworks like Facebook's Relay Modern (and Apollo Client when offline/optimist
 
 So while it's possible to use Facebook's Relay Modern without its offline/optimistic-update features, and conform to the design patterns described here, it is not necessary. That's especially true if one wishes to use VueJS, Angular 4 or Ember 2 instead of React.
 
+This particular implementation uses the Apollo Client which gives us greater flexbility to implement the design patterns of this architecture without sacrificing any aspect (see: https://dev-blog.apollodata.com/apollo-link-creating-your-custom-graphql-client-c865be0ce059)
+
 ![GraphQL](https://s29.postimg.org/b7ifw7vc7/image1.png)
 
 
