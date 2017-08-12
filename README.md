@@ -1,45 +1,36 @@
 
-## GraphQL + Data-Oriented NodeJS Microservices Architecture with Realtime, "Stateless" UI 
+## Change as First-Class Citizen  Applications
 
-A maintainable application architecture requires that the UI only contain the rendering logic and execute queries and mutations against the underlying data model on the server. A maintainable architecture requires that the UI be free of logic for deriving "app state" since that would embed business logic in the client. App state should be persisted to the database and then projected to the client via the mid tier, and refreshed as mutations occur on the server, which gives us a highly interactive, realtime UX that's free of incidental complexity under the hood.
+A maintainable application architecture requires that the UI to only contain the rendering logic and the queries and mutations against the underlying data model on the server. A maintainable architecture requires that the UI does not derive or compose app state since that would embed business logic in the client. App state should be persisted on backend store(s) and projected in the required to the client via a dynamic, demand-driven data layer, outside the UI, that lets the client pull any data (without the limitation of a fixed backend API) and with the projected app state refreshing automatically in th UI as mutations occur on the server that affect it, which gives us a highly interactive, realtime UX/UI that's free of the extra complexity of business logic and app-state projection/shaping logic, therefore making it stratight forward to change the UI and keep up with changing business needs.
 
-With GraphQL we are able to define an easy-to-change application-level data schema on the server which captures the types and relationships in our domain model, and wiring it to data sources via resolvers that leverage a uniform data-oriented service API (CRUD methods plus Find with Query DSL that extends to the db or wraps existing API) to resolve client-specified "queries" and "mutations" against the domain model.
+In other words, the architecture discussed here makes Change a first-class citizen. 
 
-We use GraphQL to dynamically derive a UI-specific projection/shape of our app state from server-side data sources which is the updated in real time (with help of GraphQL Subscriptions)
+The dynamic, demand-driven data layer is provided in this architecture by GraphQL which allows us to define a statically typed schema on the server that captures the various data types and relationships between them in our domain model, and wire the schema to data sources via resolver functions that connect to data-oriented microservices API and resolve client-specified "queries" and "mutations" against the schema. This way UI developers may code against the schema and eliminate all miscommunication with --and dependency on-- backend developers, which is what delays so many projects and makes adding new features a major chore rather then a simple and joyful process. 
 
-With this approach, the developer's job becomes a much more pleasant and simpler task of building the application-level GraphQL schema, building UI components and declaratively specifying the required queries and mutations.
+Making microservices 'data oriented' means that each service is a join-free ORM or ODM model that represents exactly just one table or one collection in the database and exposing a CRUD interface plus a Find method that leverages database-specific adapter with a Standard Query DSL.) The services could also wrap an existing API and exposes it through the same exact interface. This makes backend development trivial by elininating complex relational queries from the codebase and moving app-state mutation, derivation and composition out of microservices and into I/O-bound, schema-based, input/output data type resolvers that resolve GraphQL queries and mutations from the client.
 
-Client-centric architectures (like those based on client-side 'app state' stores like Redux) derive "app state" on the client, and as such end up embedding business logic in the client. While those architectures also enable things like 'optimistic UI' and 'offline first' apps they can exponentially complicate the work involved in maintaining and evolving the application.
+With this approach, the UI developer's job becomes a much more pleasant and simpler task of building the GraphQL schema, building the UI components and specifying the queries and mutations (at the schema level) per each I/O event. This way the UI becomes a thin realtime I/O layer, without any business logic. 
+
+In summary, we use GraphQL dynamically derive and/or compose a UI-specific projection/shape of our app state, via composable, data-oriented microservices, and then have that projection of app state updated in real time (with help of GraphQL Subscriptions) whenever the data behind the rendered portion of app state changes. 
+
+Currently popular architectures that derive and/or compose "app state" in the client (usin Redux, MobX, et al) and therefore necessarily embed business logic and app-state projection/shaping into the client thus making change a second class citizen. While those architectures also enable things like 'optimistic UI updates' and 'offline first' they exponentially complicate the work involved when it comes to making changes to the application based on ever-changing business requirements. Frameworks like Facebook's Relay Modern (and Apollo Client when offline/optimistic-update features are used) can bring back those capabilities to this architecture, at the cost of putting back business logic (but not app-state projection/shaping) into the client. However, 'offline-first' and 'optimistic UI updates' are purely meaningless in most if not all business applications where liveness and transactionality are essential parts of the UK.  
 
 ![GraphQL](https://s29.postimg.org/b7ifw7vc7/image1.png)
 
 
 ## Some Challenges and Considerations
 
-1. We should separate dynamic and static data, conceptually as well as physically. The two are often conflated and that creates architectural complexity. Static data is something like menu items in a food ordering app. Dynamic data is stuff like what the user has ordered and status of the order. While we may cache static data on the client, we should keep dynamic data on the server to avoid cache invalidation challenges. This principles followed here are intended for building realtime, transactional  apps (think: ordering & delivery and 'hard realtime' apps like Uber) In this context, we do not need to store dynamic data on the client because we're not deriving app state on the client (we do so in the GraphQQL resolvers in the mid tier) and this means that we don't reoplicate business logic on the client that belongs on the server. What we sacrifice here is the ability to update the UI optimistcally and the ability to work offline. But those two abilities are not needed for realtime, transactional apps. That is because it is pointless to tell the user that their order was successful or their Uber driver is 2 minutes away then find out from server that the order cannot be fulfilled or the driver is stuck in traffic. It just does not make any sense. This is to say that offline-first UI and optimistic UI are at odds with 'realtime' apps and present extra overhead of replicating business logic sand composing app state on the client, as well as storing dynamic data on the client that presents cache invalidation challenge. 
+1. We should separate dynamic and static data in the client, conceptually as well as physically. The two are often conflated and that creates architectural complexity. Static data is something like menu items in a food ordering app. Dynamic data is something like what the status of an order. While we may cache static data on the client, we should keep dynamic data on the server to avoid the complexity of cache eviction. GraphQL subscriptions are used to keep data in the UI up to date with app state on the server. We can use other techniques to eliminbate any chance of the client making issuing and mutations that reply on a previous version of app state, without making the server stateful. 
 
-So then the question is wouldn't losing Optimistic UI hurt mobile performance? The fact is that GraphQL already does a lot to help mobile performance by allowing us to get exactly the data we need at any given instance as opposed to downloading more data than we need and putting it in the client side cache then having to keep all that data in sync with the server, which could be very challenging, especially if we derive app state on the client, which means that we have a lot of client derived state that depends on the cached dynamic data. A recipe for incidental complexity (cache invalidation challenge being one but also business logic creeping into client)
- 
+2. The need for service hooks: we need to be able to make sure the user is authenticated and authorized before executing a query or a mutation (and conditionally avoiding doing so) This way we can implement authentication and authorization/role checks in those hooks, as opposed to co-mingling with the logic of the business process. 
 
-2. Avoid business logic in the client: “app state” should not be derived and/or cached on the client as that would put redundant business logic in the client which adds a lot of unneeded complexity to the app. The client needs to be just an I/O layer, fetching/re-fetching UI-component-bound query results and making mutations to data on the server. In this pure, functional client model, local component state (including local state of higher order components) is used for ephemeral, client-only state such as animation state. We avoid deriving app state on the client because that necessitates the embedding of business logic in the client, which complicates app building and maintenance. Instead, we opt to simply refetch UI-component-bound query results based on certain events like (backend mutation events, navigation state change or after network interruption) and let UI components derive their own local state from server-side app state which is persisted to the database and derived and projected to (or shaped for) the client in the mid-tier using GraphQL. The business logic stays on the server and the UI developer's job becomes very simple.
+3. The need for realtime mutation events that perform well at scale: when something changes on the server, we need to know about it, but only if we care about it. This calls for dynamic subscriptions. 
 
-3. The need for pre-mutation hooks: we need to be able to authorize the user before executing a mutation (and conditionally avoiding the mutation) so we can implement authorization on the server and leave business logic completely outside the client.
+4. We should be able to validate data in mutations from client on both the client (for instant feedback) and in our business logic inside GraphQL resolvers (for security)
 
-4. The need for post-mutation hooks to make calls to external APIs (e.g. send email) after a given mutation. 
+5. We should be able to implement secure authentication using OAuth and Email/Password, via JSON Web Tokens (no cookies.)
 
-5. The need for live mutation events that perform well at scale: when something changes on the server, we need to know about it, either via polling or signaling. The latter has the advantage of being immediate.
-
-6. Currently, GraphQL developers need to know many different querying syntaxes for the various resolvers in the schema (MySQL, MongoDB, different APIs, etc), or write their own API adapters for each data store to decouple their resolvers from the underlying data store.
-
-7. We should be able to validate data based on our business logic, inside GraphQL resolvers
-
-8. We should be able to implement secure authentication using OAuth and Email/Password.
-
-9. We should be able to implement authorization independent of our database or network interface.
-
-10. We should be able to implement validation generically at the UI component level for instant feedback as user types
-
-11. We should be able to derive business logic in GraphQL resolvers using microservices with a data-oriented interface.
+6. We should be able to implement authorization independent of our database or network interface.
 
 ## Feathers: Data-Oriented Microservices Framework for NodeJS
 
@@ -47,6 +38,10 @@ The important new concept Feathers gives us in NodeJS is that of composable, dat
 
 ```javascript
 // All service methods return a promise
+// In case of Find, params include query (Standard Query DSL), provider (rest/sockets/grpc/etc) and Bearer token
+// missing query returns all records the user is authorized to access
+// Elsewhere, params only contain provider and token, and ids in case of mutating multiple entries
+
 var myService =
 {
 find: function(params) {},
@@ -60,7 +55,7 @@ setup: function(app, path) {}
 // Use this service in your application at the /todos endpoint app.use('/todos', myService);
 ```
 
-The key innovation in combining GraphQL with Features is about having composable, data-oriented services that have a uniform CRUD interface plus a Query DSL that is adapted for various backends (SQL, NoSQL, APIs, etc), where every table or collection in db is mapped to a service (as well as the possibility for each service to have its own database to remain decoupled) with GraphQL providing the application-level, expressive interface on top of that. This means that service composition replaces relational joins. For example, if we want to get all comments for a given post, we would not associate the posts table with the comments table (as that would violate the clean, maintainable pattern of having separate, decoupled services) and instead we would call the find(...) API on the comments service passing in the post id. We can also delete every comment that belongs to a given user using the same inter-service composition defined in the GraphQL resolvers, by calling the remove() API on the comments service passing in the user id.
+The key innovation in combining GraphQL with Features is about having composable, data-oriented services that have a uniform CRUD interface plus a Query DSL that is adapted for various backends (SQL, NoSQL, APIs, etc), where every table or collection in db is mapped to a service with GraphQL providing the application-level, expressive interface on top of that. This means that service composition replaces relational joins. For example, if we want to get all comments for a given post, we would not associate the posts table with the comments table (as that would violate the clean, maintainable pattern of having separate, decoupled services) and instead we would call the find(...) API on the comments service passing in the post id. We can also delete every comment that belongs to a given user using the same inter-service composition defined in the GraphQL resolvers, by calling the remove() API on the comments service passing in the user id.
 
 Feathers will also hook into the mutative methods (create, update, patch, remove) and send events to listening clients when they successfully return. An application then can be made real-time just by listening to those events (with filtering rules on server side) and updating itself with the new data. It's important to note that backend services should not consume mutation events from Feathers services. The mutation events are meant for clients to update their state, not for other services to consume and opaquely mutate app state. If you want something to happen in an external system you should use Feathers after-hooks. If you want something to happen to Feathers connected data store after a given successful mutation then listen to the mutation event in the client that originated the mutation and create another mutation via GraphQL.
 
@@ -89,7 +84,7 @@ However, the benefits in turning those entities into services are:
 
 ## Pagination
 
-At this juncture, pagination of results can be done by either GraphQL or Feathers. My instinct is to use Windowing rather than pagination. This involves moving the fetch/display window over that data, or row at a time.
+At this juncture, pagination of results can be done by either GraphQL or Feathers. It's best to use Windowing rather than stateful pagination. This involves moving the fetch/display window over that data, or row at a time. 
 
 ## Protecting Service Methods
 
@@ -104,7 +99,7 @@ app.service('users').before({
 });
 ```
 
-## Managed Concurrent Mutations to Shared Resources
+## Concurrent Mutations in Shared Resources
 
 What happens in this kind of microservices architecture when we need to make multiple mutations (in promise chained calls) that are part of a single transaction (end state) across one or more services? Nothing if you have only one user and you're not interleaving writes. But what if you have two or more users concurrently using your application, with reads/writes against the same set of data?  The way this architecture is setup is we have inter-service composition happening in the GraphQL mutation resolvers. So for a transaction implementing dependent mutations asynchronously, the mutation resolver would orchestrate that transaction using conditional writes to guarantee consistency of our app state. If we're using a distributed database, for web scale transaction management, we would use one, like Google's Cloud Spanner, that can implement non-blocking concurrency control to guarantee consistency.
 
@@ -199,25 +194,23 @@ Here is shown that we can use a dedicated field (that is modified each time we d
 
 ## Client State
 
-When we say that we must "derive" client state from server-side app state we mean that we must not be derive app state in the client. We should derive state of the client in the mid tier using persisted app state from database or API and deriving and then shaping/projecting app state to client via GraphQL. This way we don't end up with domain specific logic in the client. This means that every value in the client is derived directly from the server-side app state. 
+The Apollo GraphQL client, which we've chosen to use in this architecture, persists query results in a local cache (for the purpose of composing and/or deriving app state in the client for Optimistic and Offline-First UI implementations) To get around this complexity, we use forceFetch to bypass cache and GraphQl Subscriptions to update fetched, dynamic data.
 
-The Apollo GraphQL client, which we've chosen to use in this architecture, persists query results in a local cache (for the purpose of caching and/or deriving app state in the client for Optimistic and Offline-First UI implementations) The use of forceFetch (bypass cache) in Apollo client can work nicely with Feathers realtime mutation events in that we may set forceFetch each time we receive a mutation event relevant to the route (in addition to when landing on a given route.)
+After loading the data, instead of having to fetch app state from the server continuously to keep transient client state in sync, which does not scale, Feathers realtime events save the day by telling us only when there has been a change to the data. This means that each route on the client has to listen to those events that relate to it so it can update its data, and when the route comes up again we would fetch again from the server. 
 
-After loading the data, instead of having to fetch app state from the server continuously to keep client state in sync, which does not scale, Feathers realtime events save the day by telling us only when there has been a change to the data. This means that each route on the client has to listen to those events that relate to it so it can update its data, and when the route comes up again we would fetch again from the server. 
-
-We leave it to the client to decide exactly what part of that area of app state it wants to refresh. So if you have e.g. a grid of 100K rows and UI is displaying rows 20-60, we won't care if rows 500-2500 have changed, so we don't need to push that data to the client. But we do have to tell the client which rows changed. 
+We leave it to the client to decide exactly what part of that area of app state it wants to refresh. So if you have e.g. a grid of 100K rows and UI is displaying rows 20-60, we won't care if rows 500-2500 have changed, so we don't need to push that data to the client. Since GraphQL Subscriptions are dynamically specified by the client this isn't an issue. 
 
 The local state of the component can be used for query params such as the index of the last fetched item in a social status feed, so the status feed component, upon receiving a mutation signal from the server that is relevant to it, can get the latest items (from last index, which is passsed in as query param) We may generalize this pattern to UI components with arbitrary data structures. We do this because there is no way for the server to know what was the last state of the status feed on the client without the server becoming stateful and losing horizontal scalability or reliability.
 
-For complex components like forms, a good pattern is for local component state to be lifted into an auto-generated higher order component (HOC) wrapper so that all client components will be functionally pure and local state management will be in the HOC, clearly separated from the implementation.
+For complex components like forms, a good pattern is for local component state to be lifted into an auto-generated higher order component (HOC) wrapper so that all client components will be functionally pure and local state, e.g. validation state, will be in the HOC.  
 
-So while app state is not derived on the client things are different when it comes to client state:
+So while app state is not composed and/or derived on the client things are different when it comes to transient client state:
 
-1. For client components that issue GraphQL mutations, we should keep transient state of the resource(s) being mutated in a local route-centric store, where each route has its store that can be passed into the next route upon route transition to seed initial state from current route, until the transient state is committed to the server. A good example is a multi-step food ordering UI, where you select your pizza crust then the toppings then the sides etc. The idea is that we should be able to go back and pick a burger instead if a pizza and not end up with an inconsistent state having a burger with peperoni for topping. 
+1. For transactions that involve a sequence of multiple routes/screens, we should keep transient client state in a route-centric store in the UI, where each route has its own store that can be passed into the next route upon route transition to seed initial state of that route, until the transaction has been committed via a GraphQL mutation. A good example is a multi-step food ordering UI, where you select your pizza crust then the toppings then the sides etc. The idea is that we should be able to go back and pick a burger instead if a pizza and not end up with an inconsistent state having a burger with peperoni for topping. 
 
-2. Each route has a main container component associated with it and it's that component that does initial route hydration (and keeping in sync with server via server mutation events) but each sub-component of the route can launch it's own mutations and other sub-components in the route will just react to server mutation events if their data did change due to a mutation launched by that sub-component, or due to a mutation from another user involving a shared resource that the sub-component depends on for its state. This means that all components have to state their dependencies (statically) and the sync-ing happens with server mutation events.   
+2. Each route has a main container component associated with it and it's that component that should do the initial route hydration (and keeping in sync with server via GraphQL Subscriptions) and forward the data via props to sub-component of the route. However, each sub-component can launch its own queries and mutations and update itself and any children, with other sub-components in the route reacting to GraphQL subscription events when any of their data depenencies on the server change. This means that all components have to specify their data dependencies dynamically after initial route rendering and the sync-ing happens via GraphQL Subscriptions.
 
-3. For client-only state (i.e. any state that is not part of 'app state', e.g animation and client side validation) we should keep that state in the local state of the HOC wrapper.   
+3. For client-only state (i.e. any state that is not part of 'app state', e.g animation and client side validation) we should keep that state in the local state of the component or in that of the HOC.   
 
 
 ## Horizontal & Vertical Scaling 
