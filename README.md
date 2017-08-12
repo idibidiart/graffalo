@@ -32,9 +32,9 @@ Currently popular architectures that derive and/or compose "app state" in the cl
 
 6. We should be able to implement authorization independent of our database or network interface.
 
-## Feathers: Data-Oriented Microservices Framework for NodeJS
+## Data-Oriented Microservices via FeathersJS
 
-The important new concept Feathers gives us in NodeJS is that of composable, data-oriented services. A service is just a JavaScript object that provides one or more of the following queries and mutations using the following data-oriented, uniform API (CRUD plus Find with Query DSL that extends to DB and wraps existing API), which is callable from any other service, and, therefore, composable. 
+The important new concept FeathersJS gives us in NodeJS is that of composable, data-oriented services. A service is just a JavaScript object that provides one or more of the following queries and mutations using the following data-oriented, uniform API (CRUD plus Find with Query DSL that extends to DB and wraps existing API), which is callable from any other service, and, therefore, composable. 
 
 ```javascript
 // All service methods return a promise
