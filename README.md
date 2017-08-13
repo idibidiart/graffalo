@@ -105,6 +105,12 @@ app.service('users').before({
 });
 ```
 
+## Distributed Transactions
+
+A distributed transaction includes one or more statements that, individually or as a group, update data on two or more distinct nodes of a distributed database. 
+
+Databases that can be distributed may offer serializability or lineralizability or both. In a distributed database setting, the minimum required standard for transactional integrity is serializability.  
+
 ## Distributing Services 
 
 In the case of this architecture, we don't need any services directly exposed to client. GraphQL is our single point of contact for the client. We can also have many instances of Node each running GraphQL+FeathersJS Microservices begind a load alancer. So there is no need to distribute the services themselves as the HTTP/Socket connection would add more overhead and complexity to the architecture than distributing would gain us in scalability. In addition, these services are I/O bound. All CPU-bound services need to be written in Go or Java to take maximum advantae of multi-core architecture and, in case of Go, native structured concurrency. Such cpu-bound services can then be wrapped by Feathers' Promise-based methods.
@@ -197,12 +203,6 @@ Here is shown that we can use a dedicated field (that is modified each time we d
 What happens if we're in the middle of a transaction that mutates (through promise-chained service invocations) many tables in our database and the application server crashes? The fact that we use data oriented microservices, where each service represents a table or collection in the database and that we may have dependent sub-mutations that are carried out via separate services, means that we have to account for possibility of server crashing in the middle of a transaction. To solve this, many databases support a two-phase commit (2PC) process where we can rollback a transaction upon server failure or any logical failure. 
 
 In a distributed DB scenario, Google Cloud Spanner also supports 2PC: https://cloud.google.com/spanner/docs/transactions and Amazon's DynamoDB supports this via a Java transaction library.
-
-## Distributed Transactions
-
-A distributed transaction includes one or more statements that, individually or as a group, update data on two or more distinct nodes of a distributed database. 
-
-Databases that can be distributed may offer serializability or lineralizability or both. In a distributed database setting, the minimum required standard for transactional integrity is serializability.  
 
 ## Client State
 
