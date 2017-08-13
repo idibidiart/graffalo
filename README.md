@@ -111,7 +111,7 @@ A distributed transaction includes one or more statements that, individually or 
 
 Databases that can be distributed may offer serializability or lineralizability or both. In a distributed database setting, the minimum required standard for transactional integrity is serializability.  
 
-## Distributed Services 
+## Criteria for Distributing Services 
 
 In the case of this architecture, we don't need any services directly exposed to client. GraphQL is our single point of contact for the client. We can also have many instances of Node each running GraphQL+FeathersJS Microservices begind a load alancer. So there is no need to distribute the services themselves as the HTTP/Socket connection would add more overhead and complexity to the architecture than distributing would gain us in scalability. In addition, these services are I/O bound. All CPU-bound services need to be written in Go or Java to take maximum advantage of multi-core architecture and, in case of Go, native structured concurrency. Such CPU-bound services can then be wrapped by Feathers' Promise-based methods.
 
