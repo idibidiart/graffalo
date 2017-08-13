@@ -105,7 +105,7 @@ app.service('users').before({
 });
 ```
 
-## Distributing Services (Why Not)
+## Distributing Services 
 
 In the case of this architecture, we don't need any services directly exposed to client. GraphQL is our single point of contact for the client. We can also have many instances of Node each running GraphQL+FeathersJS Microservices begind a load alancer. So there is no need to distribute the services themselves as the HTTP/Socket connection would add more overhead and complexity to the architecture than distributing would gain us in scalability. In addition, these services are I/O bound. All CPU-bound services need to be written in Go or Java to take maximum advantae of multi-core architecture and, in case of Go, native structured concurrency. Such cpu-bound services can then be wrapped by Feathers' Promise-based methods.
 
