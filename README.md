@@ -67,7 +67,7 @@ Feathers will also hook into the mutative methods (create, update, patch, remove
 
 We use GraphQL schema to specify application-level data types and the relationships between them and we use GraphQL resolvers to specify which Feathers services to call in order to resolve the data type being requested (via Feathers services) and filter the result hierarchically before it's consumed by the client. Our GraphQL resolvers use the Feathers services to get the type being requested and all the types that it references. This means that the resolvers themselves are decoupled from the type of data store, which is a necessary for a clean, decoupled GraphQL implementation. In addition, 'before' and 'after' hooks in Feathers allow us to add things like authorization and sanitation (security layer) and any follow up action like send email to user. Validation can happen generically in the UI or as driven by business logic in the resolvers.   
 
-## Service Level Joins (instead of relational joins)
+## Service Level Joins
 
 Let’s consider two entities, which each one of them is dealing with a different table in the database. The Deal Table is connected to Customer Table by Foreign Key (FK), so whenever we need information about the deals of a single customer, a simple SQL join will do the job.
 
