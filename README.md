@@ -67,7 +67,7 @@ Feathers will also hook into the mutative methods (create, update, patch, remove
 
 We use GraphQL schema to specify application-level data types and the relationships between them and we use GraphQL resolvers to specify which Feathers services to call in order to resolve the data type being requested (via Feathers services) and filter the result hierarchically before it's consumed by the client. Our GraphQL resolvers use the Feathers services to get the type being requested and all the types that it references. This means that the resolvers themselves are decoupled from the type of data store, which is a necessary for a clean, decoupled GraphQL implementation. In addition, 'before' and 'after' hooks in Feathers allow us to add things like authorization and sanitation (security layer) and any follow up action like send email to user. Validation can happen generically in the UI or as driven by business logic in the resolvers.   
 
-## Data-Oriented Microservices
+## Service Level Joins (instead of relational joins)
 
 Let’s consider two entities, which each one of them is dealing with a different table in the database. The Deal Table is connected to Customer Table by Foreign Key (FK), so whenever we need information about the deals of a single customer, a simple SQL join will do the job.
 
@@ -94,7 +94,7 @@ At this juncture, pagination of results can be done by either GraphQL or Feather
 
 ## Protecting Service Methods
 
-There are some times where you may want to use a service method inside your application or allow other servers in your cluster access to a method, but you don't want to expose a service method publicly. We've created a bundled hook that makes this really easy.
+There are some times where you may want to use a service method inside your application or allow other servers in your cluster access to a method, but you don't want to expose a service method publicly. We've created a bundled hook that makes this really easy. 
 
 ```javascript
 const hooks = require('feathers-hooks');
@@ -105,31 +105,25 @@ app.service('users').before({
 });
 ```
 
+## Distributing Services (Why Not)
+
+In the case of this architecture, we don't need any services directly exposed to client. GraphQL is our single point of contact for the client. We can also have many instances of Node each running GraphQL+FeathersJS Microservices begind a load alancer. So there is no need to distribute the services themselves as the HTTP/Socket connection would add more overhead and complexity to the architecture than distributing would gain us in scalability. In addition, these services are I/O bound. All CPU-bound services need to be written in Go or Java to take maximum advantae of multi-core architecture and, in case of Go, native structured concurrency. Such cpu-bound services can then be wrapped by Feathers' Promise-based methods.
+
+The thing to distribute would be the database, but if we do that then we need to handle concurrent mutations in shared resources in a distributed way, and for that we have to understand the options we have in the context of the CAP theorem.  
+
 ## Concurrent Mutations in Shared Resources
 
 What happens in this kind of microservices architecture when we need to make multiple mutations (in promise chained calls) that are part of a single transaction (end state) across one or more services? Nothing if you have only one user and you're not interleaving writes. But what if you have two or more users concurrently using your application, with reads/writes against the same set of data?  The way this architecture is setup is we have inter-service composition happening in the GraphQL mutation resolvers. So for a transaction implementing dependent mutations asynchronously, the mutation resolver would orchestrate that transaction using conditional writes to guarantee consistency of our app state. If we're using a distributed database, for web scale transaction management, we would use one, like Google's Cloud Spanner, that can implement non-blocking concurrency control to guarantee consistency.
 
 Some possible directions:
 
-  1. Consistency Features of DynamoDB: https://quabase.sei.cmu.edu/mediawiki/index.php/Amazon_DynamoDB_Consistency_Features (also see DynamoDB Java transaction library)
+  1. [Distributed] Consistency Features of DynamoDB: https://quabase.sei.cmu.edu/mediawiki/index.php/Amazon_DynamoDB_Consistency_Features (also see DynamoDB Java transaction library)
 
-  2. Consistency Features of Google's Cloud Spanner: https://cloud.google.com/spanner/docs/transactions
+  2. [Distributed] Consistency Features of Google's Cloud Spanner: https://cloud.google.com/spanner/docs/transactions
 
-  3. Non-Blocking Optimistic Concurrency Control in SQL for Single DB Instance (see section below)
+  3. [Single Instance] Non-Blocking Optimistic Concurrency Control in SQL 
 
-We should design the application to minimize write contention and for that we may use conditional updates to implement optimistic locking so that nothing is happening at the same time to the same resource or set of resources. We can also acquire read-write locks so nothing can happen to a resource between the time we check its state and the time we apply an dependent update to it or to another resource. That's pessimistic read-write locking. The onus is on us to design the app in a way that leads to minimal or no contention because contention will either slow things down or lead to inconsistent state. 
-
-## Two-Phase Commit (2PC) 
-
-While optimistic concurrency control (OCC) can take care of a whole class of problems, what happens if we're in the middle of a transaction that mutates (through promise-chained service invocations) many tables in our database and the application server crashes? The fact that we use data oriented microservices, where each service represents a table and that we may have dependent mutations that are carried out via separate services, means that we have to account for possibility of server crashing in the middle of a transaction. To solve this, many databases support a two-phase commit (2PC) process where we can rollback a transaction upon server failure or any logical failure. 
-
-In a distributed DB scenario, Google Cloud Spanner also supports 2PC: https://cloud.google.com/spanner/docs/transactions and Amazon's DynamoDB supports this via a Java transaction library.
-
-## Distributed Transactions
-
-A distributed transaction includes one or more statements that, individually or as a group, update data on two or more distinct nodes of a distributed database. 
-
-Databases that can be distributed may offer serializability or lineralizability or both (e.g. CockroachDB.)In a distributed database setting, the minimum required standard for transactional apps is serializability.  
+We should design the application to minimize write contention and for that we may use conditional updates so that nothing is happening at the same time to the same resource or set of resources. The onus is on us to design the app in a way that leads to minimal or no contention because contention will either slow things down or lead to inconsistent state. 
 
 ## Optimistic Locking (for a single db instance)
 
@@ -197,6 +191,18 @@ WHERE iD = @theId
 ```
 
 Here is shown that we can use a dedicated field (that is modified each time we do an UPDATE) to see if anyone was quicker than us and changed the row between our SELECT and UPDATE. 
+
+## Two-Phase Commit (2PC) 
+
+What happens if we're in the middle of a transaction that mutates (through promise-chained service invocations) many tables in our database and the application server crashes? The fact that we use data oriented microservices, where each service represents a table or collection in the database and that we may have dependent sub-mutations that are carried out via separate services, means that we have to account for possibility of server crashing in the middle of a transaction. To solve this, many databases support a two-phase commit (2PC) process where we can rollback a transaction upon server failure or any logical failure. 
+
+In a distributed DB scenario, Google Cloud Spanner also supports 2PC: https://cloud.google.com/spanner/docs/transactions and Amazon's DynamoDB supports this via a Java transaction library.
+
+## Distributed Transactions
+
+A distributed transaction includes one or more statements that, individually or as a group, update data on two or more distinct nodes of a distributed database. 
+
+Databases that can be distributed may offer serializability or lineralizability or both. In a distributed database setting, the minimum required standard for transactional integrity is serializability.  
 
 ## Client State
 
