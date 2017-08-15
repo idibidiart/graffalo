@@ -21,7 +21,7 @@ In terms of a UI framework, this architecture uses the Apollo Client which gives
 
 ## GraffaloJS: Architecture Overview
 
-![GraphQL](https://s11.postimg.org/pispm8bv7/Untitled_Diagram_7.png)
+![GraphQL](https://s27.postimg.org/oocsbmn1f/Untitled_Diagram_8.png)
 
 ## Data-Oriented Microservices via FeathersJS
 
