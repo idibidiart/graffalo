@@ -223,8 +223,6 @@ Server Side Rendering (SSR) serves two goals:
 1. Faster initial page load
 2. SEO 
 
-### The Problem with SSR: Cost
-
 SSR exponentially increases the number of servers required to achieve a certain TPS (even with multi-core and clustering) With Single Page Apps (SPAs) we perform all the CPU-bound work of rendering the page on the client. With SSR we perform that work on the server, and, as a result, lose greatly on scalability. Even with asynchronous server side rendering, the render loop needs to be broken in chucnks that complete within a very short time to allow other reuests to start their rendering jobs, but in the end all the work that is normally done by the client will be done on the server for every user and every request. Caching can only help so much if the content is dynamic.
 
 One of the alternatives to SSR is preloading the data for the initial route request and then letting the SPA take over. 
