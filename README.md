@@ -19,6 +19,8 @@ Currently popular architectures that derive and/or compose "app state" in the cl
 
 In terms of a UI framework, this architecture uses the Apollo Client which gives us greater flexbility to implement the design principles described under Client State (see: https://dev-blog.apollodata.com/apollo-link-creating-your-custom-graphql-client-c865be0ce059) with the addition of a simple router, and route-cenric ephemeral state store.
 
+## GraffaloJS: Architecture Overview
+
 ![GraphQL](https://s14.postimg.org/i7yzxyln5/Untitled_Diagram_3.png)
 
 ## Data-Oriented Microservices via FeathersJS
