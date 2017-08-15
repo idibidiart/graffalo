@@ -98,7 +98,7 @@ Databases that can be distributed may offer serializability or lineralizability 
 
 ## Criteria for Distributing Services 
 
-In the case of this architecture, we don't need any services directly exposed to client. GraphQL is our single point of contact for the client. We can also have many instances of Node each running GraphQL+FeathersJS Microservices begind a load alancer. So there is no need to distribute the services themselves as the HTTP/Socket connection would add more overhead and complexity to the architecture than distributing would gain us in scalability. In addition, these services are I/O bound. CPU-bound services need to be written in the most suited systems language.
+In the case of this architecture, we don't need any services directly exposed to client. GraphQL is our single point of contact for the client. We can also have many instances of Node each running GraphQL+FeathersJS Microservices begind a load alancer. So there is no need to distribute the services themselves as the HTTP/Socket connection would add more overhead and complexity to the architecture than distributing would gain us in scalability. In addition, these services are I/O bound. CPU-bound services need to be written in the most performant, multi-threaded language.
 
 The thing to distribute would be the database, but if we do that then we need to handle concurrent mutations in shared resources in a distributed way, and for that we have to understand the options we have in the context of the CAP theorem.  
 
