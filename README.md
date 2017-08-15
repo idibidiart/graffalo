@@ -1,42 +1,25 @@
 
 ## Making Change a First-Class Citizen
 
-A maintainable application architecture requires that the UI only contains the rendering logic and the queries and mutations against the underlying data model on the server. A maintainable architecture requires that the UI does not derive or compose app state since that would embed business logic in the client. App state should be persisted on backend store(s) and projected in the required to the client via a dynamic, demand-driven data layer, outside the UI, that lets the client pull any data (without the limitation of a fixed backend API) and with the projected app state refreshing automatically in th UI as mutations occur on the server that affect it, which gives us a highly interactive, realtime UX/UI that's free of the extra complexity of business logic and app-state projection/shaping logic, therefore making it stratight forward to change the UI and keep up with changing business needs.
+A maintainable application architecture requires that the UI only contains the rendering logic and the queries and mutations against the underlying data model on the server. A maintainable architecture requires that the UI does not derive app state or hardwire a projection of it in the client since that would unnecessarily embed business and data shaping logic in the client. 
 
-In other words, the architecture discussed here makes Change a first-class citizen. 
+App state should be persisted in backend store(s) and projected in the required shape to the client via a dynamic, demand-driven data layer that lets the client pull any data (without the limitation of a fixed backend API) and allows the projected app state to updated dynamically in th UI as relevant mutations occur on the server, which gives us a highly interactive, realtime UX/UI that's free of the combined weight of business logic and imperative data shaping logic. It makes it stratight forward to adapt --or even radically change-- the UI to keep up with changing business needs.
+
+The architecture discussed here makes Change a first-class citizen. 
 
 The dynamic, demand-driven data layer is provided in this architecture by GraphQL which allows us to define a statically typed schema on the server that captures the various data types and relationships between them in our domain model, and wire the schema to data sources via resolver functions that connect to data-oriented microservices API and resolve client-specified "queries" and "mutations" against the schema. This way UI developers may code against the schema and eliminate all miscommunication with --and dependency on-- backend developers, which is what delays so many projects and makes adding new features a major chore rather then a simple and joyful process. 
 
-Making microservices 'data oriented' means that each service is a join-free ORM or ODM model that represents exactly just one table or one collection in the database and exposing a CRUD interface plus a Find method that leverages database-specific adapter with a Standard Query DSL.) The services could also wrap an existing API and exposes it through the same exact interface. This makes backend development trivial by elininating complex relational queries from the codebase and moving app-state mutation, derivation and composition out of microservices and into I/O-bound, schema-based, input/output data type resolvers that resolve GraphQL queries and mutations from the client.
+Making microservices 'data oriented' means that each service is a join-free ORM or ODM model that represents exactly just one table or one collection in the database and exposing a CRUD interface plus a Find method that leverages database-specific adapter with a Standard Query DSL.) The services could also wrap an existing API and exposes it through the same exact interface. This makes backend development trivial by elininating complex relational queries from the codebase and moving app-state mutation, derivation,  composition and shaping of data for UI out of the services themselves and into I/O-bound, schema-based, input/output data type resolvers that resolve queries and mutations from the client.
 
 With this approach, the UI developer's job becomes a much more pleasant and simpler task of building the GraphQL schema, building the UI components and specifying the queries and mutations (at the schema level) per each I/O event. This way the UI becomes a thin realtime I/O layer, without any business logic. 
 
-In summary, we use GraphQL dynamically derive and/or compose a UI-specific projection/shape of our app state, via composable, data-oriented microservices, and then have that projection of app state updated in real time (with help of GraphQL Subscriptions) whenever the data behind the rendered portion of app state changes. 
+In summary, we use GraphQL dynamically derive and/or compose app state and produce a UI-specific projection/shape of it, via composable, data-oriented microservices, and then have that projection updated in real time (with help of GraphQL Subscriptions) whenever the data behind the rendered portion of app state changes on the server. 
 
-Currently popular architectures that derive and/or compose "app state" in the client (usin Redux, MobX, et al) and therefore necessarily embed business logic and app-state projection/shaping into the client thus making change a second class citizen. While those architectures also enable things like 'optimistic UI updates' and 'offline first' they exponentially complicate the work involved when it comes to making changes to the application based on ever-changing business requirements. 
+Currently popular architectures that derive and/or compose "app state" in the client (usin Redux, MobX, et al) and shape it for the UI necessarily embed business logic and app-state shaping logic into the client thus making 'change' a second class citizen. While those architectures also enable things like 'optimistic UI updates' and 'offline first' capability they exponentially complicate the work involved in changing the UI to keep up with changing business needs. 
 
-Frameworks like Facebook's Relay Modern (and Apollo Client when offline/optimistic-update features are used) can bring back those capabilities to this architecture, at the cost of putting back business logic (but not app-state projection/shaping) into the client. However, 'offline-first' and 'optimistic UI updates' are purely meaningless in most if not all business applications where liveness and transactionality are essential parts of the UK. 
+In terms of a UI framework, this architecture uses the Apollo Client which gives us greater flexbility to implement the design principles described under Client State (see: https://dev-blog.apollodata.com/apollo-link-creating-your-custom-graphql-client-c865be0ce059) with the addition of a simple router, and route-cenric ephemeral state store.
 
-So while it's possible to use Facebook's Relay Modern without its offline/optimistic-update features, and conform to the design patterns described here, it is not necessary. That's especially true if one wishes to use VueJS, Angular 4 or Ember 2 instead of React.
-
-This particular implementation uses the Apollo Client which gives us greater flexbility to implement the design patterns of this architecture without sacrificing any aspect (see: https://dev-blog.apollodata.com/apollo-link-creating-your-custom-graphql-client-c865be0ce059)
-
-![GraphQL](https://s29.postimg.org/b7ifw7vc7/image1.png)
-
-
-## Some Challenges and Considerations
-
-1. We should separate dynamic and static data in the client, conceptually as well as physically. The two are often conflated and that creates architectural complexity. Static data is something like menu items in a food ordering app. Dynamic data is something like what the status of an order. While we may cache static data on the client, we should keep dynamic data on the server to avoid the complexity of cache eviction. GraphQL subscriptions are used to keep data in the UI up to date with app state on the server. We can use other techniques to eliminbate any chance of the client making issuing and mutations that reply on a previous version of app state, without making the server stateful. 
-
-2. The need for service hooks: we need to be able to make sure the user is authenticated and authorized before executing a query or a mutation (and conditionally avoiding doing so) This way we can implement authentication and authorization/role checks in those hooks, as opposed to co-mingling with the logic of the business process. 
-
-3. The need for realtime mutation events that perform well at scale: when something changes on the server, we need to know about it, but only if we care about it. This calls for dynamic subscriptions. 
-
-4. We should be able to validate data in mutations from client on both the client (for instant feedback) and in our business logic inside GraphQL resolvers (for security)
-
-5. We should be able to implement secure authentication using OAuth and Email/Password, via JSON Web Tokens (no cookies.)
-
-6. We should be able to implement authorization independent of our database or network interface.
+![GraphQL](https://s14.postimg.org/i7yzxyln5/Untitled_Diagram_3.png)
 
 ## Data-Oriented Microservices via FeathersJS
 
@@ -85,7 +68,7 @@ With the old approach, a simple SQL join will bring us both the customer and dea
 
 However, the benefits in turning those entities into services are:
   
-  1. The Deal and Customer tables can be in different databases (or schemas) without overwhelming a single database when we need to scale. Same for the Deal and Customer services.
+  1. The Deal and Customer tables can be in different databases without overwhelming a single database when we need to scale. Same for the Deal and Customer services.
   2. Maintenance of each service can be done easily, as each table doesn’t relate to anything else.
 
 ## Pagination
@@ -117,23 +100,30 @@ In the case of this architecture, we don't need any services directly exposed to
 
 The thing to distribute would be the database, but if we do that then we need to handle concurrent mutations in shared resources in a distributed way, and for that we have to understand the options we have in the context of the CAP theorem.  
 
-## Concurrent Mutations in Shared Resources
+## Transaction Management
 
-What happens in this kind of microservices architecture when we need to make multiple mutations (in promise chained calls) that are part of a single transaction (end state) across one or more services? Nothing if you have only one user and you're not interleaving writes. But what if you have two or more users concurrently using your application, with reads/writes against the same set of data?  The way this architecture is setup is we have inter-service composition happening in the GraphQL mutation resolvers. So for a transaction implementing dependent mutations asynchronously, the mutation resolver would orchestrate that transaction using conditional writes to guarantee consistency of our app state. If we're using a distributed database, for web scale transaction management, we would use one, like Google's Cloud Spanner, that can implement non-blocking concurrency control to guarantee consistency.
+Note: Transaction Management could be handled separately by the API layer or it could be handled at the GraphQL resolver level (in case of heterogenous systems.) This section assumes the latter.
 
-Some possible directions:
+A transaction is a way of representing a state change. Formal transactions must be:
 
-  1. [Distributed] Consistency Features of DynamoDB: https://quabase.sei.cmu.edu/mediawiki/index.php/Amazon_DynamoDB_Consistency_Features (also see DynamoDB Java transaction library)
+- Atomic (a state change either happens in whole or not happen at all; you can never see a partial change)
+- Consistent (any attempt to commit an invalid change will fail, leaving the system in its previous valid state)
+- Isolated (no-one else sees any part of the transaction until it's committed)
+- Durable (transactions that have committed must be persisted first)
 
-  2. [Distributed] Consistency Features of Google's Cloud Spanner: https://cloud.google.com/spanner/docs/transactions
+What happens in this kind of microservices architecture when we need to make multiple mutations that are part of a single transaction (end state) across one or more services? Nothing if you have only one user and you're not interleaving writes. But what if you have two or more users concurrently using your application, with reads/writes against the same set of data?  The way this architecture is setup is we have joins happening in the GraphQL query and mutation resolvers. So for a transaction implementing dependent mutations asynchronously, the mutation resolver would orchestrate that transaction using conditional writes to guarantee consistency of our app state. If we're using a distributed database, for web scale transaction management, we would use one, like Google's Cloud Spanner, that can implement non-blocking concurrency control to guarantee consistency.
 
-  3. [Single Instance] Non-Blocking Optimistic Concurrency Control in SQL 
+Some options:
 
-We should design the application to minimize write contention and for that we may use conditional updates so that nothing is happening at the same time to the same resource or set of resources. The onus is on us to design the app in a way that leads to minimal or no contention because contention will either slow things down or lead to inconsistent state. 
+  1. [Distributed] Transactional Features of DynamoDB: https://quabase.sei.cmu.edu/mediawiki/index.php/Amazon_DynamoDB_Consistency_Features (also see DynamoDB Java transaction library)
 
-## Optimistic Locking (for a single db instance)
+  2. [Distributed] Transactional Features of Google's Cloud Spanner: https://cloud.google.com/spanner/docs/transactions
 
-The point is that Optimistic Locking is not a database feature, not for MySQL nor for others: optimistic locking is a practice that is applied using the DB with standard instructions.
+  3. [Single Instance] Optimistic Locking and Two-Phase Commit (2PC) in SQL  
+
+### Optimistic Locking (for a single db instance)
+
+Optimistic Locking is not a database feature, not for MySQL nor for others: optimistic locking is a practice that is applied using the DB with standard instructions.
 
 Let's have a very simple example and say that you want to do this in a code that multiple users/clients can run concurrently.
 
@@ -144,7 +134,7 @@ SELECT data from a row having one ID field (iD) and two data fields (val1, val2)
 optionally do your calculations with data
 UPDATE data of that row
 
-### The NO LOCKING way to is:
+#### The NO LOCKING way to is:
 
 NOTE: all code {between curl brackets} is intended to be in the app code and not in the SQL side
 
@@ -165,7 +155,7 @@ WHERE iD = @theId;
 - {GO ON WITH your other code}
 ```
 
-### The OPTIMISTIC LOCKING way is:
+#### The OPTIMISTIC LOCKING way is:
 
 NOTE: all code {between curl brackets} is intended to be in the app code and not in the SQL side
 
@@ -198,7 +188,7 @@ WHERE iD = @theId
 
 Here is shown that we can use a dedicated field (that is modified each time we do an UPDATE) to see if anyone was quicker than us and changed the row between our SELECT and UPDATE. 
 
-## Two-Phase Commit (2PC) 
+### Two-Phase Commit (2PC) 
 
 What happens if we're in the middle of a transaction that mutates (through promise-chained service invocations) many tables in our database and the application server crashes? The fact that we use data oriented microservices, where each service represents a table or collection in the database and that we may have dependent sub-mutations that are carried out via separate services, means that we have to account for possibility of server crashing in the middle of a transaction. To solve this, many databases support a two-phase commit (2PC) process where we can rollback a transaction upon server failure or any logical failure. 
 
@@ -206,7 +196,7 @@ In a distributed DB scenario, Google Cloud Spanner also supports 2PC: https://cl
 
 ## Client State
 
-The Apollo GraphQL client, which we've chosen to use in this architecture, persists query results in a local cache (for the purpose of composing and/or deriving app state in the client for Optimistic and Offline-First UI implementations) To get around this complexity, we use forceFetch to bypass cache and GraphQl Subscriptions to update fetched, dynamic data.
+The Apollo GraphQL client, which we've chosen to use in this architecture, persists query results in a local cache (for the purpose of composing and/or deriving app state in the client for Optimistic and Offline-First UI implementations) To get around this complexity, we use forceFetch to bypass cache and use GraphQL Subscriptions to update curremtly rendered dynamic data.
 
 After loading the data, instead of having to fetch app state from the server continuously to keep transient client state in sync, which does not scale, Feathers realtime events save the day by telling us only when there has been a change to the data. This means that each route on the client has to listen to those events that relate to it so it can update its data, and when the route comes up again we would fetch again from the server. 
 
@@ -216,14 +206,32 @@ For complex components like forms, a good pattern is for local component state t
 
 The local state of the HOC can be used for query params such as the index of the last fetched item in a social status feed, so the status feed component, upon receiving a mutation signal from the server that is relevant to it, can get the latest items (from last index, which is passsed in as query param) We may generalize this pattern to UI components with arbitrary data structures. We do this because there is no way for the server to know what was the last state of the status feed on the client without the server becoming stateful and losing horizontal scalability and reliability.
 
-To summarize, while app state is not composed and/or derived in the client things are different when it comes to transient client state and client-only state:
+To summarize, when it comes to transient client state and client-only state:
 
-1. For transactions that involve a sequence of multiple routes/screens, we should keep transient client state in a route-centric store in the UI, where each route has its own store that can be passed into the next route upon route transition to seed initial state of that route, until the transaction has been committed via a GraphQL mutation. A good example is a multi-step food ordering UI, where you select your pizza crust then the toppings then the sides etc. The idea is that we should be able to go back and pick a burger instead if a pizza and not end up with an inconsistent state having a burger with peperoni for topping. 
+1. For transactions that involve a sequence of multiple routes/screens, we should keep transient client state in a route-centric store in the UI, where each route has its own store that can be passed into the next route upon route transition to seed initial state of that route, until the transaction has been committed (via a GraphQL mutation.) A good example is a multi-step food ordering UI, where you select your pizza crust then the toppings then the sides etc. The idea is that we should be able to go back and pick a burger instead if a pizza and not end up with an inconsistent state having a burger with peperoni for topping. 
 
 2. Each route has a main container component associated with it and it's that component that performs initial route hydration and forwarding the data via props to its component sub-tree. This means that the route component must specify the data dependencies for the route statically and/or dynamically (based on query params) and must manage the GraphQL subscriptions for the route. Each sub-component would then alter query params (the hash fragment) when its state change results in the need to fetch data per user interaction or automatically resync with server. The route component would then get the data (directly or via subscription) and pass it down to its component sub-tree. This model works well for React Fiber (the async, priority-based renderer for React) as React gets to optiumize the rendering of the whole coponent tree for the route as opposed to launching competing async rendering processes from each sub-tree. 
 
 3. For client-only state (i.e. any state that is not part of 'app state', e.g animation and client side validation) we should keep that state in the local state of the component or in that of the HOC.   
 
+## Eliminating the Massive Cost of Server-Side Rendering
+
+Server Side Rendering (SSR) serves two goals:
+
+1. Faster initial page load
+2. SEO 
+
+### The Problem with SSR: Cost
+
+SSR exponentially increases the number of servers required to achieve a certain TPS (even with multi-core and clustering) With Single Page Apps (SPAs) we perform all the CPU-bound work of rendering the page on the client. With SSR we perform that work on the server, and, as a result, lose greatly on scalability. Even with asynchronous server side rendering, the render loop needs to be broken in chucnks that complete within a very short time to allow other reuests to start their rendering jobs, but in the end all the work that is normally done by the client will be done on the server for every user and every request. Caching can only help so much if the content is dynamic.
+
+One of the alternatives to SSR is preloading the data for the initial route request and then letting the SPA take over. 
+
+This way when the SPA is loaded by the browser the initial route will already have the data it needs, and will start rendering on the client without having to wait for the data, so the initial render will feel fast since the browser won’t open a blank page and then render things incrementally. Instead, it will open a blank page then immediately render all content at once, so the user won’t see the blank page that gets assembled in piecemeal fashion. 
+
+As to how we would pre-fetch the data on the server, we would use GraphQL as the data layer which allows us to use the same GraphQL schema and resolvers to execute a single query per route, without having to build imperative reducer logic per route just for data preloading.
+
+When it comes to SEO, Google bot can crawl SPA's so there is no need for SSR, but for other bots we can have 1000s of instances of Headless Chrome running on AWS using the Chromeless project, and that means those bots will see the same page we see and be able to crawl it without creating a scalability cost by resorting to SSR.
 
 ## Horizontal & Vertical Scaling 
 
