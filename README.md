@@ -5,7 +5,7 @@ A maintainable application architecture requires that the UI only contains the r
 
 App state should be persisted in backend store(s) and projected in the required shape to the client via a dynamic, demand-driven data layer that lets the client pull any data (without the limitation of a fixed backend API) and allows the projected app state to updated dynamically in th UI as relevant mutations occur on the server, which gives us a highly interactive, realtime UX/UI that's free of the combined weight of business logic and imperative data shaping logic. It makes it stratight forward to adapt --or even radically change-- the UI to keep up with changing business needs.
 
-The architecture discussed here makes Change a first-class citizen. 
+The architecture discussed here makes change a first-class citizen. 
 
 The dynamic, demand-driven data layer is provided in this architecture by GraphQL which allows us to define a statically typed schema on the server that captures the various data types and relationships between them in our domain model, and wire the schema to data sources via resolver functions that connect to data-oriented microservices API and resolve client-specified "queries" and "mutations" against the schema. This way UI developers may code against the schema and eliminate all miscommunication with --and dependency on-- backend developers, which is what delays so many projects and makes adding new features a major chore rather then a simple and joyful process. 
 
