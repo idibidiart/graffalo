@@ -17,11 +17,11 @@ In summary, we use GraphQL dynamically compose and/or derive app state and produ
 
 Currently popular architectures that compose and/or derive "app state" in the client (usin Redux, MobX, et al) and shape it for the UI necessarily embed business logic and app-state shaping logic into the client thus making 'change' a second class citizen. While those architectures also enable things like 'optimistic UI updates' and 'offline first' capability they exponentially complicate the work involved in changing the UI to keep up with changing business needs. 
 
-In terms of a UI framework, this architecture uses the Apollo Client which gives us greater flexbility to implement the design principles described under Client State (see: https://dev-blog.apollodata.com/apollo-link-creating-your-custom-graphql-client-c865be0ce059) with the addition of a simple router, and route-cenric ephemeral state store.
+This architecture uses React and Apollo Client as the UI stack. Apollo Client gives us great flexbility to implement this architecture (see: https://dev-blog.apollodata.com/apollo-link-creating-your-custom-graphql-client-c865be0ce059)
 
 ## GraffaloJS: Architecture Overview
 
-![GraphQL](https://s27.postimg.org/oocsbmn1f/Untitled_Diagram_8.png)
+![GraphQL](https://s27.postimg.org/mugfvqoub/Untitled_Diagram_9.png)
 
 ## Data-Oriented Microservices via FeathersJS
 
@@ -210,7 +210,7 @@ The local state of the HOC can be used for query params such as the index of the
 
 To summarize, when it comes to transient client state and client-only state:
 
-1. For transactions that involve a sequence of multiple routes/screens, we should keep transient client state in a route-centric store in the UI, where each route has its own store that can be passed into the next route upon route transition to seed initial state of that route, until the transaction has been committed (via a GraphQL mutation.) A good example is a multi-step food ordering UI, where you select your pizza crust then the toppings then the sides etc. The idea is that we should be able to go back and pick a burger instead if a pizza and not end up with an inconsistent state having a burger with peperoni for topping. 
+1. For transactions that involve a sequence of multiple screens, we should keep transient client state in a screen-centric store in the UI, where each screen has its own store that can be passed into the next NodeJS served route upon transition to seed initial transient client state for the route, until the transaction has been committed (via a GraphQL mutation) at which point we get rid of the transient state. A good example is a multi-step food ordering UI, where you select your pizza crust then the toppings then the sides etc. The idea is that we should be able to go back and pick a burger instead if a pizza and not end up with an inconsistent state having a burger with peperoni for topping. 
 
 2. Each route has a main container component associated with it and it's that component that performs initial route hydration and forwarding the data via props to its component sub-tree. This means that the route component must specify the data dependencies for the route statically and/or dynamically (based on query params) and must manage the GraphQL subscriptions for the route. Each sub-component would then alter query params (the hash fragment) when its state change results in the need to fetch data per user interaction or automatically resync with server. The route component would then get the data (directly or via subscription) and pass it down to its component sub-tree. This model works well for React Fiber (the async, priority-based renderer for React) as React gets to optiumize the rendering of the whole coponent tree for the route as opposed to launching competing async rendering processes from each sub-tree. 
 
