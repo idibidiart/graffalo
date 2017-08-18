@@ -1,5 +1,5 @@
 
-## Making Change a First-Class Citizen
+## Making Modifiability a First-Class Citizen in App Architecture
 
 A maintainable application architecture requires that the UI only contains the rendering logic and the queries and mutations against the underlying data model on the server. A maintainable architecture requires that the UI does not compose and/or derive app state or hardwire a projection of it in the client since that would unnecessarily embed business and data shaping logic into the client. 
 
