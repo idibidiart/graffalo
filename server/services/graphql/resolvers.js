@@ -30,6 +30,15 @@ export default function Resolvers(){
       // In turn they invoke Feathers services, passing them context {provider, token} 
       // and CRUD/find params where applicable
 
+      // we wrap promise-returning Feathers service methods in another promise because sometimes
+      // the code in those methods is not Promise-wrapped but Promise-returning so it may 
+      // encounter an unhandled exception and/or explicitly throw an error as opposed 
+      // to properly rejecting the promise it's returning 
+      //
+      // For more context, see e,g.:           
+      // http://2ality.com/2016/03/promise-rejections-vs-exceptions.html 
+
+
       RootQuery: {
         viewer(root, args, context) {
             // returns User type 
@@ -228,14 +237,6 @@ export default function Resolvers(){
       // The args are defined in the schema
       // The context is derived from the request header in server/services/graphql/index.js
 
-      // we wrap promise-returning Feathers service methods in another promise because sometimes
-      // those methods encounter an unhandled exception and/or explicitly throw an error as opposed 
-      // to properly rejecting the promise (by handling the exception and/or rejecting instead of 
-      // throwing an error.) 
-      //
-      // For more context, see e,g.:           
-      // http://2ality.com/2016/03/promise-rejections-vs-exceptions.html 
-
       // Services in Sub-Type Resolvers are invoked by the GraphQL service not the Client
       //
       // This means that hooks can be bypassed and we don't need to pass context again
@@ -245,6 +246,15 @@ export default function Resolvers(){
       // that you wish to run, but then that would be going against this architecture 
       // where we keep all business logic other than authentication and authorization/roles
       // in the GraphQL resolvers
+
+      // we wrap promise-returning Feathers service methods in another promise because sometimes
+      // the code in those methods is not Promise-wrapped but Promise-returning so it may 
+      // encounter an unhandled exception and/or explicitly throw an error as opposed 
+      // to properly rejecting the promise it's returning 
+      //
+      // For more context, see e,g.:           
+      // http://2ality.com/2016/03/promise-rejections-vs-exceptions.html 
+
 
       User: {
         favoriteItems(user, args, context){
