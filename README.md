@@ -21,7 +21,7 @@ This architecture uses React and Apollo Client as the UI stack. Apollo Client gi
 
 ## GraffaloJS: Architecture Overview
 
-![GraphQL](https://s26.postimg.org/9x9jq2ckp/Untitled_Diagram_10.png)
+![GraphQL](https://s26.postimg.org/y4t2ni76h/Untitled_Diagram_11.png)
 
 ## Data-Oriented Microservices via FeathersJS
 
