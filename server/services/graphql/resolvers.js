@@ -239,7 +239,8 @@ export default function Resolvers(){
 
       // Services in Sub-Type Resolvers are invoked by the GraphQL service not the Client
       //
-      // This means that hooks can be bypassed and we don't need to pass context again
+      // This means that authentication/authorization hooks can be bypassed and we don't 
+      // need to pass context again
       //
       // If you do pass context again it will trigger the hooks on for the sub-types too
       // so don't do it unless you have logic other than authentication/authorization 
