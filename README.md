@@ -21,7 +21,7 @@ This architecture uses React and Apollo Client as the UI stack. Apollo Client gi
 
 ## GraffaloJS: Architecture Overview
 
-![GraphQL](https://s26.postimg.org/y4t2ni76h/Untitled_Diagram_11.png)
+![GraphQL](https://s26.postimg.org/p4j6qicih/Untitled_Diagram_12.png)
 
 ## Data-Oriented Microservices via FeathersJS
 
@@ -214,24 +214,7 @@ To summarize, when it comes to transient client state and client-only state:
 
 2. Each route has a main container component associated with it and it's that component that performs initial route hydration and forwarding the data via props to its component sub-tree. This means that the route component must specify the data dependencies for the route statically and/or dynamically (based on query params) and must manage the GraphQL subscriptions for the route. Each sub-component would then alter query params (the hash fragment) when its state change results in the need to fetch data per user interaction or automatically resync with server. The route component would then get the data (directly or via subscription) and pass it down to its component sub-tree. This model works well for React Fiber (the async, priority-based renderer for React) as React gets to optiumize the rendering of the whole coponent tree for the route as opposed to launching competing async rendering processes from each sub-tree. 
 
-3. For client-only state (i.e. any state that is not part of 'app state', e.g animation and client side validation) we should keep that state in the local state of the component or in that of the HOC.   
-
-## Eliminating the Massive Cost of Server-Side Rendering
-
-Server Side Rendering (SSR) serves two goals:
-
-1. Faster initial page load
-2. SEO 
-
-SSR exponentially increases the number of servers required to achieve a certain TPS (even with multi-core and clustering) With Single Page Apps (SPAs) we perform all the CPU-bound work of rendering the page on the client. With SSR we perform that work on the server, and, as a result, lose greatly on scalability. Even with asynchronous server side rendering, the render loop needs to be broken in chucnks that complete within a very short time to allow other reuests to start their rendering jobs, but in the end all the work that is normally done by the client will be done on the server for every user and every request. Caching can only help so much if the content is dynamic.
-
-One of the alternatives to SSR is preloading the data for the initial route request and then letting the SPA take over. 
-
-This way when the SPA is loaded by the browser the initial route will already have the data it needs, and will start rendering on the client without having to wait for the data, so the initial render will feel fast since the browser won’t open a blank page and then render things incrementally. Instead, it will open a blank page then immediately render all content at once, so the user won’t see the blank page that gets assembled in piecemeal fashion. 
-
-As to how we would pre-fetch the data on the server, we would use GraphQL as the data layer which allows us to use the same GraphQL schema and resolvers to execute a single query per route, without having to build imperative reducer logic per route just for data preloading.
-
-When it comes to SEO, Google bot can crawl SPA's so there is no need for SSR, but for other bots we can have 1000s of instances of Headless Chrome running on AWS using the Chromeless project, and that means those bots will see the same page we see and be able to crawl it without creating a scalability cost by resorting to SSR.
+3. For client-only state (i.e. any state that is not part of 'app state', e.g animation and client side validation) we should keep that state in the local state of the component or in that of the HOC. 
 
 ## Horizontal & Vertical Scaling 
 
