@@ -19,9 +19,9 @@ Currently popular architectures that compose and/or derive "app state" in the cl
 
 This architecture uses React and Apollo Client as the UI stack. Apollo Client gives us great flexbility to implement this architecture (see: https://dev-blog.apollodata.com/apollo-link-creating-your-custom-graphql-client-c865be0ce059)
 
-## Architecture 
+## Architecture | Benefits
 
-![GraphQL](https://s26.postimg.org/p4j6qicih/Untitled_Diagram_12.png)
+![GraphQL](https://s26.postimg.org/80b2fbjdl/Untitled_Diagram_13.png)
 
 ## Data-Oriented Microservices via FeathersJS
 
