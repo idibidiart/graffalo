@@ -21,7 +21,7 @@ This architecture uses React and Apollo Client as the UI stack. Apollo Client gi
 
 ## Architecture | Benefits
 
-![GraphQL](https://s26.postimg.org/dctfbgw1l/Untitled_Diagram_23.png)
+![GraphQL](https://s26.postimg.org/3uq2hh43d/Untitled_Diagram_24.png)
 
 ## Data-Oriented Microservices via FeathersJS
 
