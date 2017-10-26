@@ -82,9 +82,9 @@ type AuthPayload {
 #
 # input types cannot reference output types but can reference other input types
 #
-# Just like how recursive relationship in output types are specified via
-# nesting in the query (and mutation result), recursive relationships in input types have to be
-# specified via nesting in the input
+# Recursive relationships maybe specified in both output and intput types and
+# reified by self-nested fields in the query (and mutation result) and 
+# in the actual input, respectively.
 #
 input orderInput {
   itemIds: [String!]!
