@@ -7,5 +7,6 @@ App state should be persisted in backend store(s) and projected in the required 
 
 ## Architecture | Benefits
 
-![GraphQL](https://s7.postimg.org/euxkwoqt7/Untitled_Diagram_31.png)
+![architecture](./diagram.svg)
+<img src="./diagram.svg">
 
