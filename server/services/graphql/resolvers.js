@@ -232,7 +232,7 @@ export default function Resolvers(){
         }
       },
 
-      // Sub-type resolvers for the output types from Query and Mutation Resolvers (above)
+      // Type resolvers for the output types from Query and Mutation Resolvers (above)
       // The output type is passed into the first param of each resolver function
       // The args are defined in the schema
       // The context is derived from the request header in server/services/graphql/index.js
@@ -242,12 +242,9 @@ export default function Resolvers(){
       // This means that authentication/authorization hooks can be bypassed and we don't 
       // need to pass context again
       //
-      // If you do pass context again it will trigger the hooks on for the sub-types too
-      // so don't do it unless you have logic other than authentication/authorization 
-      // that you wish to run, but then that would be going against this architecture 
-      // where we keep all business logic other than authentication and authorization/roles
-      // in the GraphQL resolvers
-
+      // If you do pass context again it will trigger the authorization hook for the 
+      // types too, not just the queries
+      //
       // we wrap promise-returning Feathers service methods in another promise because sometimes
       // the code in those methods is not Promise-wrapped but Promise-returning so it may 
       // encounter an unhandled exception and/or explicitly throw an error as opposed 
