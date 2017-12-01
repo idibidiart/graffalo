@@ -83,8 +83,8 @@ type AuthPayload {
 # input types cannot reference output types but can reference other input types
 #
 # Recursive relationships maybe specified in both output and intput types and
-# reified by self-nested fields in the query (and mutation result) and 
-# in the actual input, respectively.
+# represented by self-nested fields (of fixed depth) in the query (and mutation result) 
+# and in the actual input, respectively.
 #
 input orderInput {
   itemIds: [String!]!
