@@ -3,11 +3,9 @@
 
 ![GraphQL](https://image.ibb.co/bDaxcw/Untitled_Diagram_34.png)
 
-1.
+## Work In Progress
 
-Work In Progress
-
-#GraphQL: From Anti-Patterns To Effective Patterns
+### GraphQL: From Anti-Patterns To Effective Patterns
 
 Prior to adopting GraphQL, we observed that UI developers, using modern frameworks like React and Angular 4, will often isolate and model app state in the UI in denormalized form 
 
@@ -25,12 +23,9 @@ Another anti-pattern UI developers often implement is fetching object A, object 
 
 With GraphQL and CRUD Microservices, we get to aggregate data declaratively by simply defining the data types, including derived fields, and the relations between the types in GraphQL schema and coding the query/mutation resolvers (orchestration) and the data type resolvers (aggregation, derivation)    
 
->> This way business logic remains out of the UI and the UI state tree can be composed as a pure projection of app state on the server. 
+This way business logic remains out of the UI and the UI state tree can be composed as a pure projection of app state on the server. 
 
-
-#2. 
-
-The Future: From Resuable Components To Resuable Custom Elements
+### The Future: From Resuable Components To Resuable Custom Elements
 
 There are two fundamental W3C-specified Web Components technologies built and polyfill'ed (with intent to build) into modern browsers: 
 
