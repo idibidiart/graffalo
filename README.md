@@ -1,7 +1,7 @@
 
 ## Making 'Change' a First-Class Citizen in Platform Architecture
 
-![GraphQL](https://image.ibb.co/bDaxcw/Untitled_Diagram_34.png)
+![GraphQL](https://image.ibb.co/hWvxcw/Untitled_Diagram_35.png)
 
 ## Work In Progress
 
