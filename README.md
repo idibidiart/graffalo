@@ -11,7 +11,7 @@ Example: both objects A and B references object C, so two copies exist of object
 
 This means that every time we find out that C changed we need to update it in two (or many) places, which leads to messy state management and increased chance for communicating inconsistent/invalid state to the user and/or server
 
-One solution advertised by Redux author is his Normalizr library which normalizes/denomralizes data in one synchronous call and degraded UI performance by blocking longer than the frame budget when used on the client when the data structures are large (when fetching data from the API) and/or have deeply nested relations once normalized (when populating the UI with data)  
+One solution advertised by Redux author is his Normalizr library which normalizes/denomralizes data in one synchronous call which can degrade UI performance by blocking longer than the frame budget when the data structures are large (when fetching data from the API) and/or have deeply nested relations once normalized (when populating the UI with data)  
 
 Moreover, if the API output results in many repeated entries (e.g. getting movie times for the day across many theaters) the JSON to be parsed will be larger than it needs to be if the API output was de-duped (with type name and id's remaining in output, but not the content of each item)
 
