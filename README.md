@@ -44,5 +44,5 @@ With SkateJS we can have an Angular 4-rendered Form custom element composing Ang
 
 SkateJS also provides a Router that is framework agnostic. Only the rendering part of any framework (Angular, React, Preact, Vue, et al) is ever used.  
 
-This way we can migrate from Angular 4 to Angular 5 or any other composition-oriented framework in piecemeal fashion, as opposed to having to do it all at once, which is almost always an unrealistic approach, since our components are essentially all custom elements regardless of rendering library (different versions of Angular, React, Preact, Vue, et al)
+This way we can migrate from Angular 4 to Angular 5 or any other composition-oriented framework in piecemeal fashion (agile development), as opposed to having to do it all at once (waterfall development), which is almost always an unrealistic approach. This works because our components are essentially all custom elements regardless of rendering library (different versions of Angular, React, Preact, Vue, et al)
 
