@@ -1,7 +1,13 @@
 
 ## Making 'Change' a First-Class Citizen in Platform Architecture
 
-![GraphQL](https://image.ibb.co/hWvxcw/Untitled_Diagram_35.png)
+![GraphQL](https://image.ibb.co/bDeCAG/Untitled_Diagram_38.png)
+
+## Demand Driven Architecture with GraphQL and CRUD Microservices
+
+The data in an application is a graph. We have different types of data that make up the nodes in the graph and which are made of primitive types as well as references to other higher order (aggregated) types. The references make up the edges of the graph. Using GraphQL on top of data-oriented CRUD microservices, where each microservice REST end point encapsulates one node in our graph, we can define in a GraphQL Schema the input and output data types and declare typed queries and mutations, which are resolved at runtime using the corresponding query/mutation resolvers (orchestration) and type resolvers (aggregation, derivation). GraphQL then shapes the returned data to match the desired response structure and how it's to be provided (e.g. pagination, lazy loading, live reloading, etc) as specified in the runtime query or mutation operation.  
+
+This means that we can change the structure of the response and how we get it from the backend without touching the code, and do so on demand from different types of client (desktop, mobile, xbox, etc.) Also, adding new features to our app will simply involve adding more typed queries and mutations to the Schema and the corresponding query/mutation resolvers, or reusing existing ones while specifying a different response structure at runtime. Having GraphQL in the mid-tier means that we can avoid spreading data aggregation/shaping and data derivation logic in our UI and server, and have declarative aggregation and dynamic shaping out of the box on the server.
 
 ## GraphQL: From Anti-Patterns To Effective Patterns
 
