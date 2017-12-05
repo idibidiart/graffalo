@@ -38,7 +38,7 @@ There are two fundamental W3C-specified Web Components technologies built and po
 Shadow DOM (for DOM/CSS encapsulation) and 
 Custom Elements (user-defined native browser components with state and lifecycle hooks)
 
-SkateJS allows us to export components rendered by React, Angular 1.5, 2, 4, Vue, and other modern composition-oriented frameworks as W3C Custom Elements and and compose those Custom Elements into higher order Custom Elements with data flowing from parent to descendants and so on. 
+SkateJS allows us to export components rendered by React, Angular 1.5, 2, 4, Vue, and other modern composition-oriented frameworks as W3C Custom Elements and compose those Custom Elements into higher order Custom Elements with data flowing from parent to descendants and so on. 
 
 With SkateJS we can have an Angular 4-rendered Form custom element composing Angular 2-rendered input and selection custom elements, or the other way around with Angular 2-rendered Form custom element composing Angular 5 --and Angular 4-- rendered input and selection custom elements.
 
