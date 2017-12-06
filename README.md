@@ -29,7 +29,7 @@ This means that we can change the structure of the response and how we get it fr
 
 ![GraphQL](https://image.ibb.co/bDeCAG/Untitled_Diagram_38.png)
 
-### The Future: From Resuable Components To Resuable Custom Elements
+### The Future: From Framework-Dependent Resuable Components To Browser-Native Resuable Custom Elements
 
 #### Work In Progress
 
