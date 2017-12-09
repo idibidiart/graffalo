@@ -3,17 +3,17 @@
 
 ### From Anti-Patterns To Effective Patterns
 
-Prior to adopting GraphQL, we observed that UI developers, using modern frameworks like React and Angular 4, will often isolate and model app state in the UI in denormalized form 
+Prior to adopting GraphQL, we observed that UI developers, using current frameworks, will often isolate and model app state in the UI in denormalized or partially normalized form. 
 
-Example: both objects A and B references object C, so two copies exist of object C 
+Example: both objects A and B reference object C, so two copies exist of object C 
 
 This means that every time we find out that C changed we need to update it in two (or many) places, which leads to messy state management and increased chance for communicating inconsistent/invalid state to the user and/or server
 
-One solution advertised by Redux author is his Normalizr library which normalizes/denomralizes data in one synchronous call which can degrade UI performance by blocking longer than the frame budget when the data structures are large (when fetching data from the API) and/or have deeply nested relations once normalized (when populating the UI with data)  
+One solution is to use a library which normalizes/denomralizes data which can degrade UI performance by blocking the UI longer than the frame budget or by taking a long time in the background when the data structures are large (when fetching data from the API) and/or have deeply nested relations once normalized (when populating the UI with data)  
 
-Moreover, if the API output results in many repeated entries (e.g. getting movie times for the day across many theaters) the JSON to be parsed will be larger than it needs to be if the API output was de-duped (with type name and id's remaining in output, but not the content of each item) Also, instead of fetching deeply nested structures all at once we can split the query to fetch in stages as the user epxlores that nested data, cache previously fetched, and paginate at every level. 
+Moreover, if the API output results in many repeated entries (e.g. getting movie times for the day across many theaters) the JSON to be parsed will be larger than it needs to be if the API output was de-duped (with type name and id's remaining in output, but not the content of each item)  
 
-The best solution we found to the above is to use GraphQL and start with a normalized data model in the GraphQL Schema with performant, entity-mapped CRUD microservices corresponding by name and structure to user-defined data types (with id's replacing relations) then de-normalize (with de-duping using the graphql-deduplicator library) using async resolvers on the server, on-demand, according to the shape of the UI component to be rendered, then cache static data (only) in the UI and, use the Apollo GraphQL Client, to denormalize fully from the cache (or from server for dynamic data, e.g. shopping cart) and render UI.  
+The best solution we found to the above is to use GraphQL and start with a normalized data model in the GraphQL Schema with performant, entity-mapped CRUD microservices corresponding by name and structure to user-defined data types (with id's replacing relations) then de-normalize (with de-duping using the graphql-deduplicator library) using performant, async resolvers on the server, on-demand, according to the shape of the UI component to be rendered, then cache static data (only) in the UI and use libraries like the Apollo GraphQL Client to denormalize fully from the cache (or from server for dynamic data, e.g. shopping cart) and render UI. Also, instead of fetching deeply nested structures all at once we can split the query to fetch in stages as the user epxlores that nested data, cache previously fetched, and paginate at every level. 
 
 Another anti-pattern UI developers often implement is fetching object A, object B and (conditionally) object C from the server then composing object D in the client, possibly with some new fields derived on the client side. This leads to three major problems, the first problem being the data aggregation logic is imperatively coded in the UI and as requirements change there is a lot of re-work, and the second and third problems being the leaking of business logic into the UI in the form of service orchestration and data derivation logic.
 
