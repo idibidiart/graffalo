@@ -1,7 +1,7 @@
 
-## Pure UI with GraphQL and Entity-Mapped Microservices API: Making Change a First-Class Citizen in Platform Architecture 
+## Pure UI with GraphQL and Entity-Mapped Microservices API
 
-### Responsive and Native Apps: From Anti-Patterns To Effective Patterns
+### From Anti-Patterns To Effective Patterns
 
 Prior to adopting GraphQL, we observed that UI developers, using current frameworks, will often isolate and model app state in the UI in denormalized or partially normalized form. 
 
