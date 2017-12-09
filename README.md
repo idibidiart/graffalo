@@ -1,5 +1,5 @@
 
-## Pure UI with GraphQL and Entity-Mapped Microservices API
+## Pure UI with GraphQL and Entity-Mapped Microservices
 
 ### From Anti-Patterns To Effective Patterns
 
@@ -23,7 +23,7 @@ With GraphQL sitting on top of performant, entity-mapped CRUD microservices, we 
 
 This way business logic remains out of the UI and the UI state tree can be composed as a pure projection of app state on the server. 
 
-### Demand Driven Architecture with GraphQL and Entity-Mapped CRUD Microservices
+### Demand Driven Architecture with GraphQL and Entity-Mapped Microservices
 
 The data in an application is a graph. We have different types of data that make up the nodes in the graph (the entities in our model) and which are made of primitive types as well as references to other higher order types. The references make up the edges of the graph. Using GraphQL on top of performant, entity-mapped CRUD microservices, where each microservice's REST end point encapsulates one node/entity in our graph/model, we can define in a GraphQL Schema the input and output data types and declare typed queries and mutations, which are resolved at runtime using the corresponding query/mutation resolvers (orchestration) and type resolvers (aggregation, derivation). GraphQL then shapes the returned data to match the desired response structure and how it's to be provided (e.g. pagination, lazy loading, live reloading, etc) as specified in the runtime query or mutation operation.  
 
