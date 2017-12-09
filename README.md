@@ -1,7 +1,7 @@
 
 ## Making 'Change' a First-Class Citizen in Platform Architecture
 
-### From Anti-Patterns To Effective Patterns
+### Responsive and Native Apps: From Anti-Patterns To Effective Patterns
 
 Prior to adopting GraphQL, we observed that UI developers, using current frameworks, will often isolate and model app state in the UI in denormalized or partially normalized form. 
 
@@ -29,7 +29,7 @@ This means that we can change the structure of the response and how we get it fr
 
 ![GraphQL](https://image.ibb.co/gYwVnw/Untitled_Diagram_39.png)
 
-### Responsive Web Strategy: From Framework-Dependent Resuable Components To Browser-Native Resuable Custom Elements
+### Responsive Web: From Framework-Dependent Resuable Components To Browser-Native Resuable Custom Elements
 
 #### Work In Progress 
 
