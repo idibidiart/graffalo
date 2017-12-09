@@ -1,5 +1,5 @@
 
-## Making 'Change' a First-Class Citizen in Platform Architecture
+## Pure UI with GraphQL and Entity-Mapped Microservices API: Making Change a First-Class Citizen in Platform Architecture 
 
 ### Responsive and Native Apps: From Anti-Patterns To Effective Patterns
 
@@ -14,8 +14,8 @@ One solution is to use a library which normalizes/denomralizes data which can de
 Moreover, if the API output results in many repeated entries (e.g. getting movie times for the day across many theaters) the JSON to be parsed will be larger than it needs to be if the API output was de-duped (with type name and id's remaining in output, but not the content of each item) 
 
 Some developers have opted to partially denormalize at the server (e.g. de-duping) and in the client (for shallow relationships) but that doesn't really solve the problem as we'd still have a denormalized state model on the client that has to be kept in sync with the server.
- 
-The best solution we found to the above is to use GraphQL and start with a normalized data model in the GraphQL Schema with performant, entity-mapped CRUD microservices corresponding by name and structure to user-defined data types (with id's replacing relations) then de-normalize (with de-duping using the graphql-deduplicator library) using performant, async resolvers on the server, on-demand, according to the shape of the UI component to be rendered, then cache static data (only) in the UI. Also, instead of fetching deeply nested structures all at once we can split the query to fetch in stages as the user epxlores that nested data then cache static data and paginate at every level. Dynanic data is feched from the server and denormalized and shaped declaratively and on demand to match the state tree of the part of the UI to be rendered.
+
+The best solution we found to the above is to use GraphQL and start with a normalized data model in the GraphQL Schema with performant, entity-mapped CRUD microservices corresponding by name and structure to user-defined data types (with id's replacing relations) then de-normalize (with de-duping using the graphql-deduplicator library) using performant, async resolvers on the server, on-demand, according to the shape of the UI component to be rendered, then cache static data (only) in the UI. Also, instead of fetching deeply nested structures all at once we can split the query to fetch in stages as the user epxlores that nested data then cache static data and paginate at every level. Dynamic data is feched from the server and denormalized and shaped declaratively and on demand to match the state tree of the part of the UI to be rendered.
 
 Another anti-pattern UI developers often implement is fetching object A, object B and (conditionally) object C from the server then composing object D in the client, possibly with some new fields derived on the client side. This leads to three major problems, the first problem being the data aggregation logic is imperatively coded in the UI and as requirements change there is a lot of re-work, and the second and third problems being the leaking of business logic into the UI in the form of service orchestration and data derivation logic.
 
