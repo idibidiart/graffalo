@@ -44,7 +44,9 @@ export default function Resolvers(){
             // returns User type 
             let Viewer = app.service('/viewer');
             return new Promise(function(resolve, reject) {
-              // pass context as params with empty query
+              // pass context as params  (for authentication/authorization) with empty query 
+              // to custom viewer service that returns user
+              // before-hook populates user based on token 
               Viewer
                 .find(context)
                 .then((user) => resolve(user))
@@ -69,10 +71,12 @@ export default function Resolvers(){
           // returns [User] type 
           let Users = app.service('/users');
           return new Promise(function(resolve, reject) {
-            // pass context as params with empty query
+            // pass context as params (for authentication/authorization) with empty query to
+            // feathers-mongoose users service which returns all usets as an array of objects of type User 
+            // assuming user is authorized to see all users
             Users
               .find(context)
-              .then((user) => resolve(user))
+              .then((users) => resolve(users))
               .catch((err) => reject(err))
           })
         },
@@ -96,7 +100,7 @@ export default function Resolvers(){
               },
               ...context
             })
-            .then((item) => resolve(item))
+            .then((items) => resolve(items))
             .catch((err) => reject(err))
           })
         },
@@ -104,10 +108,12 @@ export default function Resolvers(){
           // returns [Item] type
           let Items = app.service('/items');
           return new Promise(function(resolve, reject) {
-            // pass context as params with empty query
+            // pass context as params with empty query to feathers-mongoose Items services 
+            // which returns all items
+            // assuming user can see all items
             Items
               .find(context)
-              .then((item) => resolve(item))
+              .then((items) => resolve(items))
               .catch((err) => reject(err))
           })
         },
@@ -134,8 +140,8 @@ export default function Resolvers(){
         },
         menu(root, args, context){
           // returns Menu type
-          // menu doesn't exist in db and is made entirely of sub-types
-          // so we just resolve with empty object and drill down on sub-types
+          // menu doesn't exist in db and is made entirely of higher order types
+          // so we just resolve with empty object to pass on to the type resolvers
           return Promise.resolve({})
         }
       },
@@ -233,7 +239,8 @@ export default function Resolvers(){
       },
 
       // Type resolvers for the output types from Query and Mutation Resolvers (above)
-      // The output type is passed into the first param of each resolver function
+      // The result of db query for the type (returned by Query/Mutation resolvers) is 
+      // passed into the first param of each resolver function
       // The args are defined in the schema
       // The context is derived from the request header in server/services/graphql/index.js
 
@@ -243,7 +250,8 @@ export default function Resolvers(){
       // need to pass context again
       //
       // If you do pass context again it will trigger the authorization hook for the 
-      // types too, not just the queries
+      // types too, not just the queries, so that's a way to enforce granular access rights, i.e.
+      // per field
       //
       // we wrap promise-returning Feathers service methods in another promise because sometimes
       // the code in those methods is not Promise-wrapped but Promise-returning so it may 
@@ -252,7 +260,8 @@ export default function Resolvers(){
       //
       // For more context, see e,g.:           
       // http://2ality.com/2016/03/promise-rejections-vs-exceptions.html 
-
+      //
+      // the args are provided to the field in the query if they exist in the type definition 
 
       User: {
         favoriteItems(user, args, context){
@@ -266,7 +275,7 @@ export default function Resolvers(){
                   },
                 }
               })
-              .then((item) => resolve(item))
+              .then((items) => resolve(items))
               .catch((err) => resolve(err))
             })
         },

@@ -8,6 +8,7 @@ class Service {
   }
 
   find(params) {
+    // user pre-populated by hooks
     return Promise.resolve(params.user);
   }
 }
