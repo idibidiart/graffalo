@@ -21,16 +21,16 @@ export default function Resolvers(){
 
     return {
 
-      // Query and Mutation Resolvers
+      // Root Query and Root Mutation Resolvers
       
       // Query Resolvers (return output types)
       // args are defined in schema in RootQuery and RootMutation
 
-      // These Resolvers are invoked by the GraphQL server to resolve the query
+      // These resolvers are invoked by the GraphQL server to resolve the query mutation roots
       // In turn they invoke Feathers services, passing them context {provider, token} 
       // and CRUD/find params where applicable
 
-      // we wrap promise-returning Feathers service methods in another promise because sometimes
+      // We wrap promise-returning Feathers service methods in another promise because sometimes
       // the code in those methods is not Promise-wrapped but Promise-returning so it may 
       // encounter an unhandled exception and/or explicitly throw an error as opposed 
       // to properly rejecting the promise it's returning 
