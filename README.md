@@ -17,7 +17,7 @@ Some developers have opted to partially denormalize at the server (e.g. de-dupin
 
 The best solution we found to the above is to use GraphQL and start with a normalized data model in the GraphQL Schema with performant, entity-mapped CRUD microservices corresponding by name and structure to user-defined data types (with id's being used as relational constructs) then de-normalize (with de-duping using the graphql-deduplicator library) using performant, async resolvers on the server, on-demand, according to the shape of the UI component to be rendered, then cache static data (only) in the UI. 
 
-Also, instead of fetching deeply nested structures all at once we can use GraphQL pagination to fetch in stages as the user epxlores the nested data, which is to say we paginate the edges at each node. We can also avoid ending up with N+1 queries for nested 1-to-many relations by using libraries like graphql-resolve-batch to batch the edges at each node into one resolver invocation (using a special resolver function that works with arrays of values as source.) 
+Also, instead of fetching deeply nested structures all at once we can use GraphQL pagination to fetch in stages as the user epxlores the related entities in our data, which is to say we paginate the edges at each node. We can also avoid ending up with N+1 queries for nested 1-to-many relations by using libraries like graphql-resolve-batch to batch the edges at each node into one resolver invocation (using a special resolver function that works with arrays of values as source.) 
 
 With GraphQL we can fetch data from the server (or from cache in case of static data), denormalize and shape it declaratively on-demand, to match the state tree of the part of the UI to be rendered.
 
