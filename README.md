@@ -19,7 +19,7 @@ The best solution we found to the above is to use GraphQL and start with a norma
 
 Also, instead of fetching deeply nested structures all at once we can use GraphQL pagination to fetch in stages as the user epxlores the related entities in our data, which is to say we paginate the edges at each node. We can also avoid ending up with N+1 queries for nested 1-to-many relations by using libraries like graphql-resolve-batch to batch the edges at each node into one resolver invocation (using a special resolver function that works with arrays of values as source.) 
 
-With GraphQL we can fetch data from the server (or from cache in case of static data), denormalize and shape it declaratively on-demand, to match the state tree of the part of the UI to be rendered.
+With GraphQL we can fetch data from the server (or from cache in case of static data), denormalize and shape it declaratively and on-demand to match the state tree of the part of the UI to be rendered.
 
 Another anti-pattern UI developers often implement is fetching object A, object B and (conditionally) object C from the server then composing object D in the client, possibly with some new fields derived on the client side. This leads to three major problems, the first problem being the data aggregation logic is imperatively coded in the UI and as requirements change there is a lot of re-work, and the second and third problems being the leaking of business logic into the UI in the form of service orchestration and data/state derivation.
 
