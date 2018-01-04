@@ -17,8 +17,6 @@ Some developers have opted to partially denormalize at the server (e.g. de-dupin
 
 The best solution we found to the above is to use GraphQL and start with a normalized data model in the GraphQL Schema with performant, entity-mapped CRUD microservices corresponding by name and structure to user-defined data types (with id's being used as relational constructs) then de-normalize (with de-duping using the graphql-deduplicator library) using performant, async resolvers on the server, on-demand, according to the shape of the UI component to be rendered, then cache static data (only) in the UI. 
 
-Also, instead of fetching deeply nested structures all at once we can use GraphQL pagination to fetch data in stages as the user epxlores the related entities in our data. We can also avoid ending up with N+1 queries for nested 1-to-many relations by using libraries like graphql-resolve-batch to batch the edges at each node into one resolver invocation (using a special resolver function that works with arrays of values as source.) 
-
 With GraphQL we can fetch data from the server (or from cache in case of static data), denormalize and shape it declaratively and on-demand to match the state tree of the part of the UI to be rendered.
 
 Another anti-pattern UI developers often implement is fetching object A, object B and (conditionally) object C from the server then composing object D on the client, possibly with some new fields derived on the client side. This leads to three major problems, the first problem being the data aggregation logic is imperatively coded in the UI and as requirements change there is a lot of re-work, and the second and third problems being the leaking of business logic into the UI in the form of service orchestration and data/state derivation.
@@ -34,6 +32,78 @@ The normalized data model of our application is a graph. We have different types
 This means that we can change the structure of the response from our backend without touching any imperative code, and do so on demand from different types of client (desktop, mobile, xbox, etc.) Also, adding new features to our app would simply involve adding more types of data and new queries and mutations to the Schema and the corresponding resolvers, or reusing existing ones while specifying a different response structure at runtime. Having GraphQL in the mid-tier means that we can avoid spreading data aggregation/shaping and data derivation logic in our UI and server, and have declarative aggregation and dynamic shaping out of the box on the server.
 
 ![GraphQL](https://image.ibb.co/n5rx4b/Untitled_Diagram_42.png)
+
+## Optimizing GraphQL for Wrapping REST APIs Accessed via Network
+
+Also, instead of fetching deeply nested structures all at once we can use GraphQL to fetch only as much data as we need to display as the user epxlores the related entities in our data. We can also avoid ending up with N+1 queries for nested 1-to-many relations (where N is the total number items fetched by the query) by using libraries like graphql-resolve-batch to batch the edges at each node into one resolver invocation (using a special type resolver function that works with arrays of values of a given type from query/mutation result, which are then used in resolving the nested types, such that it returns a Promise per each value and batches the values by bucketing under the field and executes and resolves all promises just once in the next tick (on NodeJS) 
+
+To understand the importance of this added optmization, consider the following, which is very significant in the scenario where GraphQL is wrapping REST API(s) that are accessed over a network as opposed to accessing the entities in our data directly via in-memory CRUD microservices running as part of the same process or on the same machine. When it comes to wrapping REST APIs that are accessed over the network the N+1 query proliferation would be a serious performance issue. 
+
+GraphQL is a powerful data querying language for both frontend and backend developers. However, because of how GraphQL queries are executed, it can be difficult to define an efficient GraphQL schema. Take for example the following query:
+
+```graphql
+{
+  users(limit: 5) {
+    name
+    friends(limit: 5) {
+      name
+    }
+  }
+}
+```
+
+This demonstrates the power of GraphQL to select arbitrarily nested data. Yet it is a difficult pattern to optimize from the schema developer’s perspective. If we naïvely translate this GraphQL query into say, SQL, we get the following psudo queries:
+
+```
+Select the first 5 users.
+Select the first 5 friends for the first user.
+Select the first 5 friends for the second user.
+Select the first 5 friends for the third user.
+Select the first 5 friends for the fourth user.
+Select the first 5 friends for the fifth user.
+```
+
+We have an N+1 problem! For every user we are executing a database query. This is noticably inefficient and does not scale. What happens when we have:
+
+```graphql
+{
+  users(limit: 5) {
+    name
+    friends(limit: 5) {
+      name
+      friends(limit: 5) {
+        name
+        friends(limit: 5) {
+          name
+        }
+      }
+    }
+  }
+}
+```
+
+This turns into 156 queries!
+
+Using the batching technique mentioned above, this is what we get:
+
+```graphql
+{
+  users(limit: 5) {
+    name
+    friends(limit: 5) { # Batches 5 executions.
+      name
+      friends(limit: 5) { # Batches 25 executions.
+        name
+        friends(limit: 5) { # Batches 125 executions.
+          name
+        }
+      }
+    }
+  }
+}
+```
+
+That is to say, each `friends(limit: 5)` field will run exactly one time. So we end up with 4 trips to the server, total, instead of 156.
 
 ### Responsive Web: From Framework-Dependent Resuable Components To Browser-Native Resuable Custom Elements
 
