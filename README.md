@@ -33,11 +33,11 @@ This means that we can change the structure of the response from our backend wit
 
 ![GraphQL](https://image.ibb.co/n5rx4b/Untitled_Diagram_42.png)
 
-## Optimizing GraphQL for Wrapping REST APIs Accessed via Network
+## Optimizing GraphQL for Nested 1-to-Many Relations
 
 One optimization that GraphQL provides out of the box is that instead of fetching deeply nested structures all at once we can use GraphQL to fetch only as much data as we need to display as the user epxlores the related entities in our data. 
 
-We can also avoid ending up with N+1 queries for nested 1-to-many relations (where N is the total number items fetched by the query) by using libraries like graphql-resolve-batch to batch the edges at each node into one resolver invocation (using a special type resolver function that works with arrays of values of a given type from query/mutation result, which are then used in resolving the nested types, such that it returns a Promise per each value and batches the values by bucketing under the field,executing the databse query over the network just once (assuming the REST API supports querying the db for multiple values at once) in the next tick (on NodeJS) and resolving all promises in the callback. 
+We can also avoid ending up with N+1 queries for nested many-to-many relations (where N is the total number the type resolver function is called for a given field of the query) by using libraries like graphql-resolve-batch to batch the edges at each node into one resolver invocation (using a special type resolver function that works with arrays of values of a given type from query/mutation result, which are then used in resolving the nested types, such that it returns a Promise per each value and batches the values by bucketing under the field,executing the databse query over the network just once (assuming the REST API supports querying the db for multiple values at once) in the next tick (on NodeJS) and resolving all promises in the callback. 
 
 To understand the importance of this added optmization, consider the following, which is very significant in the scenario where GraphQL is wrapping REST API(s) that are accessed over a network as opposed to accessing the entities in our data directly via in-memory CRUD microservices running as part of the same process. When it comes to wrapping REST APIs that are accessed over the network the N+1 query proliferation would be a serious performance issue. 
 
@@ -105,7 +105,7 @@ Using the batching technique mentioned above, this is what we get:
 }
 ```
 
-That is to say, each `friends(limit: 5)` field will run exactly one time. So we end up with 4 trips to the server, total, instead of 156.
+That is to say, each `friends(limit: 5)` field will run exactly one time. So we end up with 4 trips to the server, total, instead of 156 (1 + 5 + 25 + 125.)
 
 Note that if the backend is horizontally scalable, there should be an optimal maxBatch value (how many queries we batch per each trip to the server) to allow query execution to run in parallel, but it's a fine balance that we may have to find through experimenting and benchmarking.  
 
