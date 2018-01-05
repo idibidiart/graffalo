@@ -54,7 +54,7 @@ GraphQL is a powerful data querying language for both frontend and backend devel
 }
 ```
 
-This demonstrates the power of GraphQL to select arbitrarily nested data. Yet it is a difficult pattern to optimize from the schema developer’s perspective. If we naïvely translate this GraphQL query into say, SQL, we get the following psudo queries:
+This demonstrates the power of GraphQL to select arbitrarily nested data. Yet it is a difficult pattern to optimize from the schema developer’s perspective. If we naïvely translate this GraphQL query into say, SQL, we get the following six queries:
 
 ```
 Select the first 5 users.
@@ -65,7 +65,7 @@ Select the first 5 friends for the fourth user.
 Select the first 5 friends for the fifth user.
 ```
 
-We have an N+1 problem! For every user we are executing a database query. This is noticably inefficient and does not scale. What happens when we have:
+We have an N+1 problem! For every user we are making a trip to the server and executing a database query. This is noticably inefficient given the network latency. What happens when we have:
 
 ```graphql
 {
