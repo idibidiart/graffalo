@@ -39,7 +39,7 @@ One optimization that GraphQL provides out of the box is that instead of fetchin
 
 We can also avoid ending up with N+1 queries for nested 1-to-many relations (where N is the total number items fetched by the query) by using libraries like graphql-resolve-batch to batch the edges at each node into one resolver invocation (using a special type resolver function that works with arrays of values of a given type from query/mutation result, which are then used in resolving the nested types, such that it returns a Promise per each value and batches the values by bucketing under the field,executing the databse query over the network just once (assuming the REST API supports querying the db for multiple values at once) in the next tick (on NodeJS) and resolving all promises in the callback. 
 
-To understand the importance of this added optmization, consider the following, which is very significant in the scenario where GraphQL is wrapping REST API(s) that are accessed over a network as opposed to accessing the entities in our data directly via in-memory CRUD microservices running as part of the same process or on the same machine. When it comes to wrapping REST APIs that are accessed over the network the N+1 query proliferation would be a serious performance issue. 
+To understand the importance of this added optmization, consider the following, which is very significant in the scenario where GraphQL is wrapping REST API(s) that are accessed over a network as opposed to accessing the entities in our data directly via in-memory CRUD microservices running as part of the same process. When it comes to wrapping REST APIs that are accessed over the network the N+1 query proliferation would be a serious performance issue. 
 
 GraphQL is a powerful data querying language for both frontend and backend developers. However, because of how GraphQL queries are executed, it can be difficult to define an efficient GraphQL schema. Take for example the following query:
 
@@ -106,6 +106,8 @@ Using the batching technique mentioned above, this is what we get:
 ```
 
 That is to say, each `friends(limit: 5)` field will run exactly one time. So we end up with 4 trips to the server, total, instead of 156.
+
+Note that if the backend is horizontally scalable, there should be an optimal maxBatch value (how many queries we batch per each trip to the server) to allow query execution to run in parallel, but it's a fine balance that we may have to find through experimenting and benchmarking.  
 
 ### Responsive Web: From Framework-Dependent Resuable Components To Browser-Native Resuable Custom Elements
 
