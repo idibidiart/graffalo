@@ -46,7 +46,7 @@ export default function Resolvers(){
             return new Promise(function(resolve, reject) {
               // pass context as params  (for authentication/authorization) with empty query 
               // to custom viewer service that returns user
-              // before-hook populates user based on token 
+              // before-hook puts user info into context based on token 
               Viewer
                 .find(context)
                 .then((user) => resolve(user))

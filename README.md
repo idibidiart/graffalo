@@ -31,7 +31,7 @@ The normalized data model of our application is a graph. We have different types
 
 This means that we can change the structure of the response from our backend without touching any imperative code, and do so on demand from different types of client (desktop, mobile, xbox, etc.) Also, adding new features to our app would simply involve adding more types of data and new queries and mutations to the Schema and the corresponding resolvers, or reusing existing ones while specifying a different response structure at runtime. Having GraphQL in the mid-tier means that we can avoid spreading data aggregation/shaping and data derivation logic in our UI and server, and have declarative aggregation and dynamic shaping out of the box on the server.
 
-![GraphQL](https://image.ibb.co/n5rx4b/Untitled_Diagram_42.png)
+![GraphQL](https://image.ibb.co/dhbcrm/Screen_Shot_2018_01_09_at_11_27_36_AM.png)
 
 ## Optimizing GraphQL for Nested Relations
 
@@ -108,6 +108,10 @@ Using the batching technique mentioned above, this is what we get:
 That is to say, each `friends(limit: 5)` field will run exactly one time. So we end up with 4 trips to the server, total, instead of 156 (1 + 5 + 25 + 125.)
 
 Note that if the backend is horizontally scalable, there should be an optimal maxBatch value (how many queries we batch per each trip to the server) to allow query execution to run in parallel, but it's a fine balance that we may have to find through experimenting and benchmarking.  
+
+### Basic Architecture
+
+![GraphQL](https://image.ibb.co/n5rx4b/Untitled_Diagram_42.png)
 
 ### Responsive Web: From Framework-Dependent Resuable Components To Browser-Native Resuable Custom Elements
 
