@@ -343,7 +343,7 @@ export default function Resolvers(){
       Order: {
         user(order, args, context){
           let Users = app.service('/users');
-          return Users.get(order.userId, context)
+          return Users.get(order.userId)
         },
         items(order, args, context){
           let Items = app.service('/items')
