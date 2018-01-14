@@ -111,11 +111,15 @@ Note that if the backend is horizontally scalable, there should be an optimal ma
 
 ### Concurrency, Distributed Transactions, and Consistency
 
-Entity-Mapped Microservices imply transactions that involve more than one entity, including dependent reads and writes across those entities. Such transactions are known as distributed transactions. Since microservice architecture is intended to maximize availability, using two-phase commits (2PC) which involves acquiring locks on data to be modified is not a good option, and eventual consistency cannot be easily guarateed for a system with distrubuted transactions and concurrent, dependent read/write operations, i.e written value depends on read value. 
+Microservices, and particularly Entity-Mapped Microservices, imply the use of distributed transactions that access entities asynchronously, including performig causally-linked reads and writes from multiple clients, concurrently. 
 
-One approach is to lump services into domain model aggregates and break out of the pure entity-mapped API model. This destroys the granular access needed to flexibly change our GraphQL schema and aopplication data model as we need (without changing the underlying imperative APIs)
+Such distributed transactions in the presence of concurrency and shared data can lead to inconsistency and broken behavior, if special care is not taken. For example, multiple clients may place orders at the same time for the last unit of a given product, based on a concurrent read of the inventory system. Similarly, a user initiated distributed transaction could check the user's joint bank account's balance, finds it to be $500, then charge $100 in purchases, while at the same time the user's spouse initiates a distributed transaction that checks the bank account concurrently, finds it to be $500, and charges $450. Most banks prefer availability over consistency guarantees so this can easily happen, and the user gets hit with an overdraft fee as the account goes to -$50, which is eventually consistent, but terrible for UX. In other words, eventual consistency is no help where there are distributed transactions and concurrency.  
 
-The other approach, which is favored here, is to use offline optimistic locking via [Conditional HTTP Requests](https://tools.ietf.org/html/rfc7232) and using [eTag version](https://sookocheff.com/post/api/optimistic-locking-in-a-rest-api/) 
+Likewise, when updating multiple entities via a distributed transaction, such as an eCommerce system placing the order and then updating the number of remaining units, we can use two-phase commit to achieve atomicity, but that works based on locking and is therefore not a good fit if we require both maximum availability and maimum concurrency. 
+
+One approach to is to eliminate distributed transactions by lumping services into domain model aggregates and breaking out of the pure entity-mapped API model and being able to use the database' feature known as 'strict serializability' (aka linearizability) to assure atomicity, consistency and isolation. However, this destroys the granular access needed to flexibly define and change our GraphQL schema and aopplication data model as we need (without changing the underlying REST APIs)
+
+The other approach, which is favored in this case, is to use offline optimistic locking via [Conditional HTTP Requests](https://tools.ietf.org/html/rfc7232) and using [eTag version](https://sookocheff.com/post/api/optimistic-locking-in-a-rest-api/) 
 
 ### Basic Architecture
 
