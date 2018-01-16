@@ -111,7 +111,7 @@ Note that if the backend is horizontally scalable, there should be an optimal ma
 
 ### Concurrency, Distributed Transactions, and Consistency
 
-Microservices, and particularly Entity-Mapped Microservices, imply the use of distributed transactions that access database entities asynchronously, across separate databases of different types (relational, hierarchical, unconstrained graph, etc) which may include causally dependent or logically connected operations by multiple clients, concurrently. 
+Microservices, and particularly granular, entity-mapped microservices, imply the use of distributed transactions that access database entities asynchronously, across separate databases of different types (relational, hierarchical, unconstrained graph, etc) which may include causally dependent or logically connected operations by multiple clients, concurrently. 
 
 If special care is not taken, such distributed transactions can lead to inconsistent and broken behavior. For example, multiple clients may place orders at the same time for the last unit of a given product, based on a concurrent read of the inventory system. Similarly, a distributed transaction might check the user's bank account, finds the balance to be $500 and charges $100 in purchases, while at the same time another distributed transaction might check the same bank account, finds it to be $500, and charges $450. Since most banks prefer availability over consistency guarantees this could easily happen, and the user would get hit with an overdraft fee as the account goes to -$50, which is eventually consistent, but terrible for UX. In other words, eventual consistency is no help where there are distributed transactions and concurrency.   
 
