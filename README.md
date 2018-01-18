@@ -119,7 +119,9 @@ One approach to is to eliminate distributed transactions altogether by lumping s
 
 The other approach to handle data consistency (in the presence of concurrent access to shared resources) that does NOT tackle durability of transactions (for crash recovery, a critical requirement in case of distributed transactions) and that does not provide two-phase commit behavior (no commit consensus), is to use Offline Optimistic Locking via [Conditional HTTP Requests](https://tools.ietf.org/html/rfc7232) and using [eTag version](https://sookocheff.com/post/api/optimistic-locking-in-a-rest-api/) 
 
-For applications that must have all these criteria: strong consistency, availability and performance, see The Great API Masher (link to presentation and WIP repo coming soon.)
+For applications that must have all these criteria: strong consistency, availability and performance, see:
+
+[The Great API Masher](https://docs.google.com/document/d/1CzGScZ69VozocWmULRB-Kt4i8fxUUmC_xooYq9ZZPAs/edit?usp=sharing)
 
 ### Basic Architecture
 
