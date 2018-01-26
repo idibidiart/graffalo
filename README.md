@@ -31,8 +31,6 @@ The normalized data model of our application is a graph. We have different types
 
 This means that we can change the response from our backend without touching any imperative code on the frontend, and do so on-demand from different types of clients (desktop, mobile, xbox, etc.) Also, adding new features to our app would simply involve adding more types of data and new queries and mutations to the Schema and the corresponding resolvers, or reusing existing ones while specifying a different response structure at runtime. 
 
-![GraphQL](https://image.ibb.co/dhbcrm/Screen_Shot_2018_01_09_at_11_27_36_AM.png)
-
 ## Optimizing GraphQL for Nested Relations
 
 One optimization that GraphQL provides out of the box is that instead of fetching deeply nested structures all at once we can use GraphQL to fetch only as much data as we need to display as the user epxlores the related entities in our data. 
