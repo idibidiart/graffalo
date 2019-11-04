@@ -40,7 +40,7 @@
     "graphql": "^0.9.6",
     "graphql-server-express": "^0.7.2",
     "graphql-tools": "^0.11.0",
-    "mongoose": "^4.8.4",
+    "mongoose": "^5.7.5",
     "request-promise": "^4.1.0",
     "serve-favicon": "^2.3.0",
     "winston": "^2.2.0"
